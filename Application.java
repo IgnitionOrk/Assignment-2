@@ -1,7 +1,7 @@
 /**
  * Student name: Student Number:
  * 	1) Ryan Cunneen: 3179234
- * 	2) Jonathan Low: 
+ * 	2) Jonathan Low: 3279624
  * */
 public class Application {
 	public static void main(String[] args) {
