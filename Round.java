@@ -24,7 +24,7 @@ public class Round{	/***/
 		{
 			if(i<key.length())
 			{
-				if(text.substring(i,1)==key.substring(i,1))
+				if(text.substring(i,i+1).equals(key.substring(i,i+1)))
 				{
 					bit="0";
 				}else{
@@ -34,7 +34,7 @@ public class Round{	/***/
 			}
 		}
 
-		return "";
+		return generatedText;
 	}
 	/***/
 	public String substitutionTable(String text){

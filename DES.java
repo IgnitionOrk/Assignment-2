@@ -70,7 +70,6 @@ public class DES {
 			generatedText+=text.substring(finalPermutationTable[i]-1,finalPermutationTable[i]);
 		}
 
-
 		return generatedText;
 	}
 }

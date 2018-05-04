@@ -24,6 +24,8 @@ public class Application {
 		System.out.println("Plaintext: "+plaintext);
 		System.out.println("Key: "+key);
 
+		System.out.println(new Round().xor("1100","1010"));
+
 		DES des = new DES("DES0", new Round());
 		ciphertext=des.encrypt(plaintext, key);
 
