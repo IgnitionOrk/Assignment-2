@@ -15,9 +15,25 @@ public class Round{	/***/
 		System.out.println("inverseExpansionTable");
 		return "";
 	}
-	/***/
+	/*xor's 2 texts over each other. Generated text will be the same length as the shorter text*/
 	public String xor(String text, String key){
-		System.out.println("xor");
+		String generatedText="";
+		String bit="";
+
+		for(int i=0; i<text.length(); i++)
+		{
+			if(i<key.length())
+			{
+				if(text.substring(i,1)==key.substring(i,1))
+				{
+					bit="0";
+				}else{
+					bit="1";
+				}
+				generatedText+=bit;
+			}
+		}
+
 		return "";
 	}
 	/***/
@@ -25,13 +41,12 @@ public class Round{	/***/
 		System.out.println("substitutionTable");
 		return "";
 	}
-	/***/
+	/*initial permutations*/
 	public String permutation(String text){
-		System.out.println("permutation");
-		return "";
+		return "permutation";
 	}
 	/***/
 	public void hello(){
-		System.out.println("HERE");
+		System.out.println("hello");
 	}
 }
