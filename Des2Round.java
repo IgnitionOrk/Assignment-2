@@ -4,10 +4,11 @@ public class Des2Round extends Round{
 		super();
 	}
 	/***/
-	public String function(String rightSide, String key){
-		super.expansionTable(rightSide);
-		super.xor(rightSide, key);
-		super.permutation(rightSide);
-		return "";
+	public String function(String rightSide, String subkey) {
+		rightSide = expansion(rightSide);
+		rightSide = xor(rightSide, subkey);
+		rightSide = inverseExpansion(rightSide);
+		rightSide = permutation(rightSide);
+		return rightSide;
 	}
 }
