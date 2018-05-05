@@ -4,42 +4,50 @@
  * 	2) Jonathan Low: 3279624
  * */
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
-
+/*
+ * 
+ 	RUN PROGRAM WITH PARAMETERS java Application < data.txt
+	to load the plaintext/ciphertext
+	String test64="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890()";
+	String test56="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234";
+*/
 public class Application {
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
-		String plaintext="";
-		String key="";
-		String ciphertext="";
-
-		String test64="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890()";
-		String test56="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234";
-
-		/*RUN PROGRAM WITH PARAMETERS java Application < data.txt
-		to load the plaintext/ciphertext*/
-		Scanner scan = new Scanner(System.in);
-		plaintext=scan.nextLine();
-		key=scan.nextLine();
-
-		System.out.println("Plaintext: "+plaintext);
-		System.out.println("Key: "+key);
-
-		System.out.println(new Round().xor("1100","1010"));
-
-		DES des = new DES("DES0", new Round());
-		ciphertext=des.encrypt(plaintext, key);
-
-		System.out.println("Ciphertext: "+ciphertext);
-
-		/*
-		des = new DES("DES1", new Des1Round());	
-		des.encrypt("", "");
-		System.out.println("");
-		des = new DES("DES2", new Des2Round());
-		des.encrypt("", "");
-		System.out.println("");
-		des = new DES("DES3", new Des3Round());
-		des.encrypt("", "");
-		*/
+		try {
+			Scanner scanner = new Scanner(new File(args[0]));
+			String plaintext = scanner.nextLine();
+			String key = scanner.nextLine();
+			//DES des = new DES("DES0", new Round());
+			//String ciphertext = des.encrypt(plaintext, key);
+			KeyGenerator keyGenerator = new KeyGenerator();
+			
+			key = "11110000110011001010101011110101010101100110011110001111";
+			keyGenerator.initiate(0, key);
+			System.out.println("ENCRYPTION");
+			for(int i = 0; i < 16; i++){
+				System.out.println("Round "+i+": subkey: "+keyGenerator.subkey(i));
+			}
+			
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+			keyGenerator.initiate(1, key);
+			System.out.println("DECRYPTION");
+			int index = 15;
+			int x = 0;
+			for(int i = 0; i < 16; i++){
+				x = index - i;
+				System.out.println("Round "+x+": subkey: "+keyGenerator.subkey(i));
+			}
+			
+			
+			//System.out.println("Ciphertext: "+ciphertext);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 }

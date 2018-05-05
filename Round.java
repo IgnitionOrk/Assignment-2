@@ -2,17 +2,14 @@
 public class Round{	/***/
 	/***/
 	public String function(String rightSide, String key) {
-		expansionTable(rightSide);
 		return "";
 	}	
 	/***/
 	public String expansionTable(String rightSide){
-		System.out.println("expansionTable");
 		return "";
 	}
 	/***/
 	public String inverseExpansionTable(String text){
-		System.out.println("inverseExpansionTable");
 		return "";
 	}
 	/*xor's 2 texts over each other. Generated text will be the same length as the shorter text*/
@@ -38,15 +35,10 @@ public class Round{	/***/
 	}
 	/***/
 	public String substitutionTable(String text){
-		System.out.println("substitutionTable");
 		return "";
 	}
 	/*initial permutations*/
 	public String permutation(String text){
 		return "permutation";
-	}
-	/***/
-	public void hello(){
-		System.out.println("hello");
 	}
 }

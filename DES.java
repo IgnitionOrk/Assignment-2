@@ -12,64 +12,96 @@ public class DES {
 	private final int[] finalPermutationTable = new int[]{40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25};
 
 	private final int ROUNDS = 1;
-	/***/
+	/**
+	 * @param version
+	 * @param round
+	 */
 	public DES(String version, Round round){
 		this.version = version;
 		this.round = round;
 		this.keyGenerator = new KeyGenerator();
 	}
-	/***/
+	/**
+	 * @param plaintext
+	 * @param key
+	 * @return
+	 */
 	public String encrypt(String plaintext, String key){
+		keyGenerator.initiate(0, key);
 		String permutatedInput = initialPermutation(plaintext);
-		String roundInput = rounds(permutatedInput, key);
-		//String inversePermutatedInput = swap(roundInput);
-		return inverseInitialPermutation(roundInput);
+		String roundInput = rounds(permutatedInput);
+		return finalInitialPermutation(roundInput);
 	}
-	/***/
+	/**
+	 * @param ciphertext
+	 * @param key
+	 * @return
+	 */
 	public String decrypt(String ciphertext, String key){
-		String inversePermutatedInput = inverseInitialPermutation(ciphertext);
-		String roundInput = rounds(inversePermutatedInput, key);
+		// reversing the order in whch 
+		keyGenerator.initiate(1, key);
+		String inversePermutatedInput = finalInitialPermutation(ciphertext);
+		String roundInput = rounds(inversePermutatedInput);
 		String permutatedInput = swap(roundInput);
 		return initialPermutation(permutatedInput);
 	}
-	/***/
+	/**
+	 * @param text
+	 * @return
+	 */
 	private String swap(String text){
 		String leftSide = text.substring(0, (text.length() / 2) + 1);
 		String rightSide = text.substring((text.length() / 2) + 1);
 		return rightSide+leftSide;
 	}
-	/***/
-	private String rounds(String text, String subkey){
-		String leftSide = text.substring(0, (text.length() / 2) + 1);
-		String rightSide = text.substring((text.length() / 2) + 1);
-
+	/**
+	 * @param text
+	 * @return
+	 */
+	private String rounds(String text){
 		for(int i = 0; i < ROUNDS; i++){
-			round.function(rightSide, subkey);
-			subkey = keyGenerator.generateKey(subkey);
+			text = round.function(text, keyGenerator.subkey(i));
 		}
 		return text;
 	}
-	
-	public String initialPermutation(String text){
-		String generatedText="";
-
-		for(int i=0; i<64; i++)
-		{
-			generatedText+=text.substring(initialPermutationTable[i]-1,initialPermutationTable[i]);
-		}
-
-
-		return generatedText;
+	/**
+	 * @param text
+	 * @return
+	 */
+	private String left(String text){
+		return text.substring(0, (text.length() / 2));
 	}
-	
-	private String inverseInitialPermutation(String text){
-		String generatedText="";
-
-		for(int i=0; i<64; i++)
-		{
-			generatedText+=text.substring(finalPermutationTable[i]-1,finalPermutationTable[i]);
+	/**
+	 * @param text
+	 * @return
+	 */
+	private String right(String text){
+		return text.substring((text.length() / 2), text.length());
+	}
+	/**
+	 * @param text
+	 * @return
+	 */
+	public String initialPermutation(String text){
+		return permutate(text, initialPermutationTable);
+	}
+	/**
+	 * @param text
+	 * @return
+	 */
+	private String finalInitialPermutation(String text){
+		return permutate(text, finalPermutationTable);
+	}
+	/**
+	 * @param text
+	 * @param table
+	 * @return
+	 */
+	private String permutate(String text, int[] table){
+		String permutation = "";
+		for(int i = 0; i < text.length(); i++){
+			permutation += text.substring(table[i] - 1, table[i]);
 		}
-
-		return generatedText;
+		return permutation;
 	}
 }
