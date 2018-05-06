@@ -68,4 +68,11 @@ public class DES {
 	private String right(String text){
 		return text.substring((text.length() / 2), text.length());
 	}
+	/**
+	 * @return
+	 */
+	public String version() {
+		// TODO Auto-generated method stub
+		return version;
+	}
 }

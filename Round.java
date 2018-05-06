@@ -5,9 +5,16 @@
  * */
 public class Round{	
 	private KeyGenerator keyGenerator;
+	private int[] sInstructions; // sequence of instructions; 
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
+	/**
+	 * @param sInstructions
+	 */
+	public Round(int[] sInstructions){
+		this.sInstructions = sInstructions;
+	}
 	/**
 	 * @param mode:
 	 * @param subkey: 
@@ -34,7 +41,7 @@ public class Round{
 	/**
 	 * @param rightSide: 32-bit right half of the text. 
 	 * @return: The transformed right side of the text. 
-	 */
+	
 	private String function(String rightSide) {
 		// Permutation through expansion. 
 		rightSide = expansion(rightSide);
@@ -44,6 +51,45 @@ public class Round{
 		rightSide = substitution(rightSide);
 		// Final permutation; 
 		return permutation(rightSide);
+	}*/
+	
+	/**
+	 * @param text
+	 * @return
+	 */
+	private String function(String text){
+		for(int i = 0; i < sInstructions.length; i++){
+			text = execute(sInstructions[i], text);
+		}
+		return text;
+	}
+	
+	/**
+	 * @param i
+	 * @param text
+	 * @return
+	 */
+	private String execute(int i, String text){
+		switch(i){
+			case 0:
+				text = expansion(text);
+				break;
+			case 1:
+				text = xor(text, keyGenerator.subkey());
+				break;
+			case 2:
+				text = substitution(text);
+				break;
+			case 3:
+				text = permutation(text);
+				break;
+			case 4:
+				text = inverseExpansion(text);
+				break;
+			default:
+				System.out.println("WARNING: METHOD MISSING!");
+		}
+		return text;
 	}
 	/*xor's 2 texts over each other. Generated text will be the same length as the shorter text*/
 	/**
