@@ -9,6 +9,7 @@ public class Des2Round extends Round{
 		rightSide = xor(rightSide, subkey);
 		rightSide = inverseExpansion(rightSide);
 		rightSide = permutation(rightSide);
+		System.out.println("HERE");
 		return rightSide;
 	}
 }

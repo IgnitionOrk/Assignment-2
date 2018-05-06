@@ -3,23 +3,19 @@
  * 	1) Ryan Cunneen: 3179234
  * 	2) Jonathan Low: 3279624
  * */
-
 public class Round{	
 	private KeyGenerator keyGenerator;
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
-<<<<<<< HEAD
-	public Round(){
-		this.keyGenerator = new KeyGenerator();
-	}
 	/**
-	 * @param rightSide
-	 * @param subkey
+	 * @param mode:
+	 * @param subkey: 
 	 * @return
 	 */
 	public void initialize(int mode, String key) {
-		keyGenerator.initialize(mode, key);
+		this.keyGenerator = new KeyGenerator();
+		this.keyGenerator.initialize(mode, key);
 	}
 	/**
 	 * @param leftSide
@@ -27,14 +23,69 @@ public class Round{
 	 * @return
 	 */
 	public String process(String leftSide, String rightSide){
-		String leftXor = leftSide;
+		String leftSideUsedForXor = leftSide;
 		leftSide = rightSide;
-		rightSide = function(rightSide, keyGenerator.subkey());
-		rightSide = xor(leftXor, rightSide);
+		// Subject the right side of the text, through a series of 
+		// permutations and substitutions. 
+		rightSide = function(rightSide);
+		rightSide = xor(leftSideUsedForXor, rightSide);
 		return leftSide+rightSide;
 	}
-=======
-	
+	/**
+	 * @param rightSide: 32-bit right half of the text. 
+	 * @return: The transformed right side of the text. 
+	 */
+	private String function(String rightSide) {
+		// Permutation through expansion. 
+		rightSide = expansion(rightSide);
+		// XOR right side with the generated subkey for the round. 
+		rightSide = xor(rightSide, keyGenerator.subkey());
+		// Substitution of rightSide's values. 
+		rightSide = substitution(rightSide);
+		// Final permutation; 
+		return permutation(rightSide);
+	}
+	/*xor's 2 texts over each other. Generated text will be the same length as the shorter text*/
+	/**
+	 * @param text
+	 * @param subkey
+	 * @return
+	 */
+	public String xor(String text, String subkey){
+		String generatedText="";
+		for(int i=0; i<text.length(); i++){
+			if(text.charAt(i) == subkey.charAt(i)){
+				generatedText+="0";
+			}else{
+				generatedText+="1";
+			}
+		}
+		return generatedText;
+	}
+	/**
+	 * @param text
+	 * @return
+	 */
+	public String expansion(String text){
+		return Transposition.permutation(text, eTable);
+	}
+	/**
+	 * @param text
+	 * @return
+	 */
+	public String inverseExpansion(String text){
+		return Transposition.permutation(text, iETable);
+	}
+	/**
+	 * @param text
+	 * @return
+	 */
+	public String permutation(String text){
+		return Transposition.permutation(text, pTable);
+	}
+	/**
+	 * 
+	 */
 	private int[][][] sBoxes = new int[][][] //[sBoxID][column][row]
 	{
 		{
@@ -93,61 +144,11 @@ public class Round{
 			{2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
 		},
 	};
-
->>>>>>> 6f7ae0af5cbd823f0c32d3a799ad04b2bdd640fa
-	/**
-	 * @param rightSide
-	 * @param subkey
-	 * @return
-	 */
-	private String function(String rightSide, String subkey) {
-		rightSide = expansion(rightSide);
-		rightSide = xor(rightSide, subkey);
-		//rightSide = substitution(rightSide);
-		rightSide = permutation(rightSide);
-		return rightSide;
-	}	
-	/**
-	 * @param text
-	 * @return
-	 */
-	public String expansion(String text){
-		return permutate(text, eTable);
-	}
-	/**
-	 * @param text
-	 * @return
-	 */
-	public String inverseExpansion(String text){
-		return permutate(text, iETable);
-	}	
-	/**
-	 * @param text
-	 * @return
-	 */
-	public String permutation(String text){
-		return permutate(text, pTable);
-	}
-	/**
-	 * @param text
-	 * @param table
-	 * @return
-	 */
-	private String permutate(String text, int[] table){
-		String expandedText = "";
-		for(int i = 0; i < table.length;i++){
-			expandedText += text.substring(table[i] - 1, table[i]);
-		}
-		return expandedText;
-	}
 	/**
 	 * @param text
 	 * @return
 	 */
 	public String substitution(String text){
-<<<<<<< HEAD
-		return text;
-=======
 		String value="";
 		String textBlock="";
 
@@ -217,28 +218,5 @@ public class Round{
 		}
 
 		return value;
->>>>>>> 6f7ae0af5cbd823f0c32d3a799ad04b2bdd640fa
-	}
-
-	/*xor's 2 texts over each other. Generated text will be the same length as the shorter text*/
-	public String xor(String text, String key){
-		String generatedText="";
-		String bit="";
-
-		for(int i=0; i<text.length(); i++)
-		{
-			if(i<key.length())
-			{
-				if(text.substring(i,i+1).equals(key.substring(i,i+1)))
-				{
-					bit="0";
-				}else{
-					bit="1";
-				}
-				generatedText+=bit;
-			}
-		}
-
-		return generatedText;
 	}
 }

@@ -40,17 +40,8 @@ public class KeyGenerator {
 		String c = "";
 		String d = "";
 		for(int i = 0; i < subkeys.length; i++){
-<<<<<<< HEAD
 			c = leftShift(i, leftSide(key));
 			d = leftShift(i, rightSide(key));
-=======
-			//System.out.println("KEY: "+key);
-			c = leftShift(i, leftSide(key));
-			d = leftShift(i, rightSide(key));
-			//System.out.println("C:   "+c);
-			//System.out.println("D:   "+d);
-			//System.out.println("Round: "+i);
->>>>>>> 6f7ae0af5cbd823f0c32d3a799ad04b2bdd640fa
 			key = c+d;
 			add(permutate(key, PC2));
 		}
@@ -89,10 +80,6 @@ public class KeyGenerator {
 	private void add(String subkey){
 		subkeys[iCount] = subkey;
 		iCount++;
-<<<<<<< HEAD
-=======
-		//System.out.println("Subkey: "+subkey);
->>>>>>> 6f7ae0af5cbd823f0c32d3a799ad04b2bdd640fa
 	}
 	/**
 	 * @param iRound
