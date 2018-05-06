@@ -58,10 +58,20 @@ public class DES {
 	 * @return
 	 */
 	private String rounds(String text){
+		String l = left(text);
+		String r = right(text);
+		String t = l; //preserve the left side
+
 		for(int i = 0; i < ROUNDS; i++){
+<<<<<<< HEAD
 			text = round.process(left(text), right(text));
+=======
+			l = round.function(r, keyGenerator.subkey(i)); //call the function on the right and put  it into the left
+			r = t; //set the right side to what [was] the left
+			t = l; //preserve the left side
+>>>>>>> 6f7ae0af5cbd823f0c32d3a799ad04b2bdd640fa
 		}
-		return text;
+		return l+r;
 	}
 	/**
 	 * @param text
