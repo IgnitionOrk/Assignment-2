@@ -23,11 +23,30 @@ public class Application {
 			Scanner scanner = new Scanner(new File(args[0]));
 			String plaintext = scanner.nextLine();
 			String key = scanner.nextLine();
-			//DES des = new DES("DES0", new Round());
-			//String ciphertext = des.encrypt(plaintext, key);
-			KeyGenerator keyGenerator = new KeyGenerator();
+			DES des = new DES("DES0", new Round());
+			System.out.println("Plaintext:  "+plaintext);
+			String ciphertext = des.encrypt(plaintext, key);
+			System.out.println("Ciphertext: "+ciphertext);
+			plaintext = des.decrypt(ciphertext, key);
+			System.out.println("Plaintext:  "+plaintext);
+
 			
-			key = "11110000110011001010101011110101010101100110011110001111";
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			//KeyGenerator keyGenerator = new KeyGenerator();	
+			/*key = "11110000110011001010101011110101010101100110011110001111";
 			keyGenerator.initiate(0, key);
 			System.out.println("ENCRYPTION");
 			for(int i = 0; i < 16; i++){
@@ -42,15 +61,15 @@ public class Application {
 			for(int i = 0; i < 16; i++){
 				x = index - i;
 				System.out.println("Round "+x+": subkey: "+keyGenerator.subkey(i));
-			}
-			String test32="abcdefghijklmnopqrstuvwxyzABCDEF";
+			}*/
+			/*String test32="abcdefghijklmnopqrstuvwxyzABCDEF";
 			System.out.println(test32 +  " length: "+test32.length());
 			String result = new Round().expansion(test32);
 			System.out.println(result + "  length: "+result.length());
 			String result2 = new Round().inverseExpansion(result);
 			System.out.println(result2 + "  length: "+result2.length());
 			String pResult = new Round().permutation(test32);
-			System.out.println(pResult + "  length: "+pResult.length());
+			System.out.println(pResult + "  length: "+pResult.length());*/
 			//System.out.println("Ciphertext: "+ciphertext);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
