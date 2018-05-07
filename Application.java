@@ -20,6 +20,31 @@ public class Application {
 	 */
 	public static void main(String[] args) {
 		try {
+			
+			
+			/**
+			 * To do list:
+			 * Test
+			 * Create a Pi and Ki differing in one bit. 
+			 * 
+			 * Encrypt P using K
+			 * Encrypt Pi using K
+			 * Encrypt P using Ki
+			 * Encrypt Pi using Ki 
+			 * 
+			 * 
+			 * 
+			 * encryption: input file
+			 * encryption: output file:
+			 * 
+			 * 
+			 * decryption: input file: Contains the encrypted text, and key. 
+			 * decryption: output file: Contains ciphertext, Key, and the decrypted plaintext.
+			 * 
+			 * 
+			 * */
+			
+			
 			Scanner scanner = new Scanner(new File(args[0]));
 			String plaintext = scanner.nextLine();
 			String key = scanner.nextLine();
@@ -28,6 +53,7 @@ public class Application {
 			DES des2 = new DES("DES2", new Round(new int[]{0, 1, 4, 3}));
 			DES des3 = new DES("DES3", new Round(new int[]{0, 1, 4}));
 
+			
 			System.out.println("VERSION: "+des0.version());
 			des0.initialize(0, key);
 			System.out.println("ORIGINAL  Plaintext:  "+plaintext);
@@ -71,5 +97,9 @@ public class Application {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void fileWriter(){
+		
 	}
 }
