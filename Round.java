@@ -38,7 +38,7 @@ public class Round{
 		rightSide = xor(leftSideUsedForXor, rightSide);
 		return leftSide+rightSide;
 	}
-	/**
+	/*
 	 * @param rightSide: 32-bit right half of the text. 
 	 * @return: The transformed right side of the text. 
 	
