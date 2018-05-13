@@ -24,9 +24,39 @@ public class DES {
 			this.value = value;
 		}
 	}
+
+	public enum Version{
+		DES0("DES0", new int[]{0, 1} ),
+		DES1("DES1", new int[]{0} ),
+		DES2("DES2", new int[]{2, 1} ),
+		DES3("DES3", new int[]{2} );
+
+		private String version;
+		private int[] sequence;
+
+		/**
+		 * @return
+		 */
+		public String getVersion(){
+			return version;
+		}
+
+		public int[] getSequence(){
+			return sequence;
+		}
+
+		/**
+		 * @param value
+		 */
+		Version(String version, int[] sequence){
+			this.version = version;
+			this.sequence = sequence;
+		}
+	}  
+
 	private DESMode mode;
-	private KeyGenerator keyGenerator; 
 	private Version version;
+	private KeyGenerator keyGenerator;
 	private Round round;
 	private String plaintext;
 	private String ciphertext;

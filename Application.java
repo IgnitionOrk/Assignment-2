@@ -20,10 +20,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 public class Application {
 	private static final int NUMBEROFVERSIONS = 4;
-	private static Version[] versions = new Version[NUMBEROFVERSIONS];
+	//private static Version[] versions = new Version[NUMBEROFVERSIONS];
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		versions();
+		//versions();
 		Scanner scanner = new Scanner(new File(args[0]));
 		String text = scanner.nextLine();
 		String key = scanner.nextLine();
@@ -44,19 +44,19 @@ public class Application {
 	/**
 	 * 
 	 */
-	private static void versions(){
-		versions[0] = new Version("DES0", new int[]{0, 1} );
-		versions[1] = new Version("DES1", new int[]{0} );
-		versions[2] = new Version("DES2", new int[]{2, 1} );
-		versions[3] = new Version("DES3", new int[]{2} );
-	}
+	//private static void versions(){
+		//versions[0] = new Version("DES0", new int[]{0, 1} );
+		//versions[1] = new Version("DES1", new int[]{0} );
+		//versions[2] = new Version("DES2", new int[]{2, 1} );
+		//versions[3] = new Version("DES3", new int[]{2} );
+	//}
 	/**
 	 * @param i
 	 * @return
 	 */
-	private static Version Versions(int i){
-		return versions[i];
-	}
+	//private static Version Versions(int i){
+		//return versions[i];
+	//}
 	/**
 	 * @param scanner 
 	 * @throws UnsupportedEncodingException 
@@ -65,7 +65,7 @@ public class Application {
 	 */
 	private static void decryption(String ciphertext, String key) throws FileNotFoundException, UnsupportedEncodingException{
 	    PrintWriter dWriter = new PrintWriter("DECRYPTIONOUTPUT.txt", "UTF-8");
-		DES des = new DES(Versions(0));
+		DES des = new DES(DES.Version.DES0);
 		des.initializeCipher(DES.DESMode.DECRYPT, key);
 		des.begin(ciphertext);
 		dWriter.write("DECRYPTION\n");
@@ -84,7 +84,7 @@ public class Application {
 		// No difference in either plaintext P or key K. 
 		DES[] desVersions = new DES[NUMBEROFVERSIONS];
 		for(int i = 0; i < NUMBEROFVERSIONS; i++){
-			desVersions[i] = new DES(Versions(i));
+			desVersions[i] = new DES(DES.Version.values()[i]);
 			// Encrypt P under K;
 			desVersions[i].initializeCipher(DES.DESMode.ENCRYPT, key);
 			desVersions[i].begin(plaintext);
@@ -121,7 +121,7 @@ public class Application {
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
 		for(int x = 0; x < NUMBEROFVERSIONS; x++){
 			for(int y = 0; y < length; y++){
-				tempDES[x][y] = new DES(Versions(x));
+				tempDES[x][y] = new DES(DES.Version.values()[x]);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, key);
 				tempDES[x][y].begin(iPlaintexts[y]);
 			}	
@@ -140,7 +140,7 @@ public class Application {
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
 		for(int x = 0; x < NUMBEROFVERSIONS; x++){
 			for(int y = 0; y < length; y++){
-				tempDES[x][y] = new DES(Versions(x));
+				tempDES[x][y] = new DES(DES.Version.values()[x]);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, iKeys[y]);
 				tempDES[x][y].begin(plaintext);
 			}
