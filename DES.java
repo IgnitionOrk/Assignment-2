@@ -1,84 +1,81 @@
 /**
  * Student name: Student Number:
  * 	1) Ryan Cunneen: 3179234
- * 	2) Jonathan Low: 
+ * 	2) Jonathan Low: 3279624
  * */
 public class DES {
-	private String version;
+	public enum DESMode{
+		// The boolean argument determines if we need to reverse the subkeys.
+		// false: no need to reverse, otherwise reverse subkeys. 
+		ENCRYPT(false), 
+		DECRYPT(true);
+		private boolean value;
+		
+		/**
+		 * @return
+		 */
+		public boolean valueOf(){
+			return value;
+		}
+		/**
+		 * @param value
+		 */
+		DESMode(boolean value){
+			this.value = value;
+		}
+	}
+	private DESMode mode;
+	private KeyGenerator keyGenerator; 
+	private Version version;
 	private Round round;
-
 	private String plaintext;
-	private String key;
 	private String ciphertext;
-	private String[] roundText = new String[16];
-
-	// initial permutation table taken from https://en.wikipedia.org/wiki/DES_supplementary_material
 	private final int[] initialPermutationTable = new int[]{58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7};
 	private final int[] finalPermutationTable = new int[]{40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25};
 	private final int ROUNDS = 16;
-	
+	private String[] roundText = new String[ROUNDS];
 	/**
-	 * @param version
-	 * @param round
-	 * @param plaintext
-	 * @param key
-	 * @param ciphertext
+	 * @param version: The version of DES.
+	 * @param round: Round process, used to transform the text. 
+	 * @param text: 64-bit text we wish to either encrypt or decrypt. 
+	 * @param key: 56-bit key. 
+	 * @param mode: The mode of DES either encrypting or decrypting the text. 
 	 */
-	public DES(String version, Round round, String plaintext, String key, String ciphertext){
+	public DES(Version version){
 		this.version = version;
-		this.round = round;
-		this.plaintext=plaintext;
-		this.key=key;
-		this.ciphertext=ciphertext;
+		this.round = new Round(version.getSequence());
 	}
-
-	/**
-	 * @param version
-	 * @param round
-	 * @param plaintext
-	 * @param key
-	 */
-	public DES(String version, Round round, String plaintext, String key){
-		this.version = version;
-		this.round = round;
-		this.plaintext=plaintext;
-		this.key=key;
-		this.ciphertext="";
-	}
-
 	/**
 	 * @param mode
+	 * @param key
 	 */
-	public void initialize(int mode){
-		//round.initialize(mode); //this will be done at the start of each transform now
+	public void initializeCipher(DESMode mode, String key){
+		this.mode = mode;
+		// .valueOf will either be true or false, this is dependent on the mode of the DES.
+		// DESMode is defined at the beginning of the class. 
+		this.keyGenerator = new KeyGenerator(mode.valueOf(), key);
+		
 	}
-
-	public String encrypt()
-	{
-		if(plaintext.length()!=64 || key.length()!=56){return "";}
-		return transform(true);
-	}
-	public String decrypt()
-	{
-		if(ciphertext.length()!=64 || key.length()!=56){return "";}
-		return transform(false);
-	}
-
 	/**
-	 * @param plainToCipher
+	 * @param text
+	 */
+	public void begin(String text){
+		if(mode.valueOf()){
+			// Decrypting the ciphertext to obtains its plaintext
+			ciphertext = text;
+			plaintext = transform(ciphertext);
+		}
+		else{
+			// Encrypting the plaintext to obtains its ciphertext
+			plaintext = text;
+			ciphertext = transform(plaintext);
+		}
+	}
+	/**
+	 * @param text
 	 * @return
 	 */
-	//true to encrypt, false to decrypt
-	public String transform(boolean plainToCipher){
-		String text=plaintext;
-		if(plainToCipher==false)
-		{
-			round.initialize(1, key); //initialise our round to DECRYPT
-			text=ciphertext;
-		}else{
-			round.initialize(0, key); //initialise our round to ENCRYPT
-		}
-
+	private String transform(String text){
 		// Initial permutation;
 		String permutatedInput = Transposition.permutation(text, initialPermutationTable);
 		// Iteration through the rounds;
@@ -86,16 +83,7 @@ public class DES {
 		// Final permutation through the use of swapping left and right halves.
 		String fpermutatedInput = swap(roundInput);
 		// Final (Inverse) permutation; 
-		text=Transposition.permutation(fpermutatedInput, finalPermutationTable);
-
-		if(plainToCipher)
-		{
-			ciphertext=text;
-		}else{
-			plaintext=text;
-		}
-
-		return text;
+		return Transposition.permutation(fpermutatedInput, finalPermutationTable);
 	}
 	/**
 	 * @param text
@@ -109,11 +97,9 @@ public class DES {
 	 * @return
 	 */
 	private String rounds(String text){
-		String temp=text;
-
 		for(int i = 0; i < ROUNDS; i++){
-			text = round.process(left(text), right(text));
-			roundText[i]=text;
+			text = round.process(left(text), right(text), keyGenerator.subkey());
+			roundText[i] = text;
 		}
 		return text;
 	}
@@ -137,74 +123,27 @@ public class DES {
 	/**
 	 * @return
 	 */
-	public String version() {
-		// TODO Auto-generated method stub
-		return version;
+	public String version(){
+		return version.getVersion();
 	}
-
 	/**
 	 * @return
 	 */
-	public String getKey()
-	{
-		return key;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getCiphertext()
-	{
+	public String getCiphertext(){
 		return ciphertext;
 	}
 
 	/**
 	 * @return
 	 */
-	public String getPlaintext()
-	{
+	public String getPlaintext(){
 		return plaintext;
 	}
-
-	/**
-	 * @param key
-	 */
-	public void setKey(String key)
-	{
-		this.key=key;
-	}
-
-	/**
-	 * @param plaintext
-	 */
-	public void setPlaintext(String plaintext)
-	{
-		this.plaintext=plaintext;
-	}
-
-	/**
-	 * @param ciphertext
-	 */
-	public void setCiphertext(String ciphertext)
-	{
-		this.ciphertext=ciphertext;
-	}
-
 	/**
 	 * @param pos
 	 * @return
 	 */
-	public String getRoundText(int pos)
-	{
-		if(pos>15){return "";}
+	public String getRoundText(int pos){
 		return roundText[pos];
-	}
-
-	/**
-	 * @return
-	 */
-	public String[] getAllRoundText()
-	{
-		return roundText;
 	}
 }

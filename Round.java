@@ -4,8 +4,7 @@
  * 	2) Jonathan Low: 3279624
  * */
 public class Round{	
-	private KeyGenerator keyGenerator;
-	private int[] sInstructions; // sequence of instructions; 
+	private int[] sInstructions; // sequence of instructions to be executed in a defined order; 
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
@@ -16,48 +15,31 @@ public class Round{
 		this.sInstructions = sInstructions;
 	}
 	/**
-	 * @param mode:
-	 * @param subkey: 
-	 * @return
-	 */
-	public void initialize(int mode, String key) {
-		this.keyGenerator = new KeyGenerator();
-		this.keyGenerator.initialize(mode, key);
-	}
-	/**
 	 * @param leftSide
 	 * @param rightSide
 	 * @return
 	 */
-	public String process(String leftSide, String rightSide){
+	public String process(String leftSide, String rightSide, String subKey){
 		String leftSideUsedForXor = leftSide;
 		leftSide = rightSide;
 		// Subject the right side of the text, through a series of 
 		// permutations and substitutions. 
-		rightSide = function(rightSide);
+		rightSide = function(rightSide, subKey);
 		rightSide = xor(leftSideUsedForXor, rightSide);
 		return leftSide+rightSide;
 	}
-	/*
-	 * @param rightSide: 32-bit right half of the text. 
-	 * @return: The transformed right side of the text. 
-	
-	private String function(String rightSide) {
-		// Permutation through expansion. 
-		rightSide = expansion(rightSide);
-		// XOR right side with the generated subkey for the round. 
-		rightSide = xor(rightSide, keyGenerator.subkey());
-		// Substitution of rightSide's values. 
-		rightSide = substitution(rightSide);
-		// Final permutation; 
-		return permutation(rightSide);
-	}*/
 	
 	/**
 	 * @param text
 	 * @return
 	 */
-	private String function(String text){
+	private String function(String text, String subKey){
+		// Expand the 32-bit text to 48-bits.
+		text = expansion(text);
+		// XOR the 48-bits, with the 48-bit sub key. 
+		text = xor(text, subKey);
+		// Execute additional methods, in the order in which they
+		// were expressed in the int array. 
 		for(int i = 0; i < sInstructions.length; i++){
 			text = execute(sInstructions[i], text);
 		}
@@ -72,22 +54,14 @@ public class Round{
 	private String execute(int i, String text){
 		switch(i){
 			case 0:
-				text = expansion(text);
-				break;
-			case 1:
-				text = xor(text, keyGenerator.subkey());
-				break;
-			case 2:
 				text = substitution(text);
 				break;
-			case 3:
+			case 1:
 				text = permutation(text);
 				break;
-			case 4:
+			case 2:
 				text = inverseExpansion(text);
 				break;
-			default:
-				System.out.println("WARNING: METHOD MISSING!");
 		}
 		return text;
 	}
@@ -102,7 +76,8 @@ public class Round{
 		for(int i=0; i<text.length(); i++){
 			if(text.charAt(i) == subkey.charAt(i)){
 				generatedText+="0";
-			}else{
+			}
+			else{
 				generatedText+="1";
 			}
 		}
@@ -222,6 +197,10 @@ public class Round{
 		return value;
 	}
 
+	/**
+	 * @param text
+	 * @return
+	 */
 	private int binaryToDec(String text)
 	{
 		int multiplier=1;
@@ -239,6 +218,10 @@ public class Round{
 		return value;
 	}
 
+	/**
+	 * @param num
+	 * @return
+	 */
 	private String decimalToBin(int num)
 	{
 		int multiplier=1;
