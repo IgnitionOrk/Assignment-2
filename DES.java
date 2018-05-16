@@ -5,14 +5,16 @@
  * */
 public class DES {
 	public enum DESMode{
-		// The boolean argument determines if we need to reverse the subkeys.
-		// false: no need to reverse, otherwise reverse subkeys. 
+		/**
+		 * The boolean argument determines if we need to reverse the subkeys.
+		 * false: no need to reverse, otherwise reverse subkeys. 
+		 * */
 		ENCRYPT(false), 
 		DECRYPT(true);
 		private boolean value;
 		
 		/**
-		 * @return
+		 * @return: 
 		 */
 		public boolean valueOf(){
 			return value;
@@ -24,7 +26,9 @@ public class DES {
 			this.value = value;
 		}
 	}
-
+	/**
+	 * 
+	 * */
 	public enum Version{
 		DES0("DES0", new int[]{0, 1} ),
 		DES1("DES1", new int[]{0} ),
@@ -53,11 +57,13 @@ public class DES {
 			this.sequence = sequence;
 		}
 	}  
-
 	private DESMode mode;
 	private Version version;
 	private KeyGenerator keyGenerator;
 	private Round round;
+	/**
+	 * Variables used to calculated th avalanche effect. 
+	 * */
 	private String plaintext;
 	private String ciphertext;
 	private final int[] initialPermutationTable = new int[]{58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7};
@@ -81,13 +87,12 @@ public class DES {
 	 */
 	public void initializeCipher(DESMode mode, String key){
 		this.mode = mode;
-		// .valueOf will either be true or false, this is dependent on the mode of the DES.
-		// DESMode is defined at the beginning of the class. 
+		// .valueOf will either be true (decrypting) or false (encrypting). 
+		// It defines if the generated subkeys are applied in reverse order. 
 		this.keyGenerator = new KeyGenerator(mode.valueOf(), key);
-		
 	}
 	/**
-	 * @param text
+	 * @param text: The text DES is going to transform into either plaintext or ciphertext. 
 	 */
 	public void begin(String text){
 		if(mode.valueOf()){
@@ -107,13 +112,13 @@ public class DES {
 	 */
 	private String transform(String text){
 		// Initial permutation;
-		String permutatedInput = Transposition.permutation(text, initialPermutationTable);
+		String permutatedInput = Transposition.permute(text, initialPermutationTable);
 		// Iteration through the rounds;
 		String roundInput = rounds(permutatedInput);
 		// Final permutation through the use of swapping left and right halves.
 		String fpermutatedInput = swap(roundInput);
 		// Final (Inverse) permutation; 
-		return Transposition.permutation(fpermutatedInput, finalPermutationTable);
+		return Transposition.permute(fpermutatedInput, finalPermutationTable);
 	}
 	/**
 	 * @param text

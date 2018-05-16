@@ -4,48 +4,51 @@
  * 	2) Jonathan Low: 3279624
  * */
 public class Round{	
-	private int[] sInstructions; // sequence of instructions to be executed in a defined order; 
+	private int[] sInstructions; 
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
 	/**
-	 * @param sInstructions
+	 * Constructor: Round
+	 * @param sInstructions: Sequence of individual ciphers to be performed. 
 	 */
 	public Round(int[] sInstructions){
 		this.sInstructions = sInstructions;
 	}
 	/**
-	 * @param leftSide
-	 * @param rightSide
-	 * @return
+	 * @param lHalf: 32-bit integer (Left half of the text).
+	 * @param rHalf: 32-bit integer (Right half of the text).
+	 * @param subKey: 48-bit integer.
+	 * @return: The processed text, after a single round. 
 	 */
-	public String process(String leftSide, String rightSide, String subKey){
-		String leftSideUsedForXor = leftSide;
-		leftSide = rightSide;
+	public String process(String lHalf, String rHalf, String subKey){
+		String leftSideUsedForXor = lHalf;
+		lHalf = rHalf;
 		// Subject the right side of the text, through a series of 
 		// permutations and substitutions. 
-		rightSide = function(rightSide, subKey);
-		rightSide = xor(leftSideUsedForXor, rightSide);
-		return leftSide+rightSide;
+		rHalf = function(rHalf, subKey);
+		// Bitwise operator exclusiveOR.
+		rHalf = Bitwise.xor(leftSideUsedForXor, rHalf);
+		return lHalf+rHalf;
 	}
-	
 	/**
-	 * @param text
+	 * @param rHalf: 32-bit integer (Right half initial text).
+	 * @param subKey: 48-bit integer.
 	 * @return
 	 */
-	private String function(String text, String subKey){
+	private String function(String rHalf, String subKey){
 		// Expand the 32-bit text to 48-bits.
-		text = expansion(text);
+		rHalf = expansion(rHalf);
+		// Bitwise operator exclusiveOR.
 		// XOR the 48-bits, with the 48-bit sub key. 
-		text = xor(text, subKey);
+		rHalf = Bitwise.xor(rHalf, subKey);
 		// Execute additional methods, in the order in which they
-		// were expressed in the int array. 
+		// were expressed in the int array sInstructions. 
 		for(int i = 0; i < sInstructions.length; i++){
-			text = execute(sInstructions[i], text);
+			rHalf = execute(sInstructions[i], rHalf);
 		}
-		return text;
+		return rHalf;
 	}
-	
 	/**
 	 * @param i
 	 * @param text
@@ -65,44 +68,26 @@ public class Round{
 		}
 		return text;
 	}
-	/*xor's 2 texts over each other. Generated text will be the same length as the shorter text*/
-	/**
-	 * @param text
-	 * @param subkey
-	 * @return
-	 */
-	public String xor(String text, String subkey){
-		String generatedText="";
-		for(int i=0; i<text.length(); i++){
-			if(text.charAt(i) == subkey.charAt(i)){
-				generatedText+="0";
-			}
-			else{
-				generatedText+="1";
-			}
-		}
-		return generatedText;
-	}
 	/**
 	 * @param text
 	 * @return
 	 */
 	public String expansion(String text){
-		return Transposition.permutation(text, eTable);
+		return Transposition.permute(text, eTable);
 	}
 	/**
 	 * @param text
 	 * @return
 	 */
 	public String inverseExpansion(String text){
-		return Transposition.permutation(text, iETable);
+		return Transposition.permute(text, iETable);
 	}
 	/**
 	 * @param text
 	 * @return
 	 */
 	public String permutation(String text){
-		return Transposition.permutation(text, pTable);
+		return Transposition.permute(text, pTable);
 	}
 	/**
 	 * 

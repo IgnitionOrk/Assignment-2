@@ -20,51 +20,31 @@ import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 public class Application {
 	private static final int NUMBEROFVERSIONS = 4;
-	//private static Version[] versions = new Version[NUMBEROFVERSIONS];
-	
+	private static final String OUTPUTTXT = "output.txt";	
 	public static void main(String[] args) throws FileNotFoundException {
-		//versions();
 		Scanner scanner = new Scanner(new File(args[0]));
+		String bit = scanner.nextLine();
 		String text = scanner.nextLine();
 		String key = scanner.nextLine();
 		try{
-			if(args[0].toLowerCase().contains("decryption")){
-				decryption(text, key);
-			}
-			else{
+			if(bit.equals("0")){
 				encryption(text, key);
 			}
-			
-			
+			else{
+				decryption(text, key);
+			}
 		}
 		catch(Exception ex){
 			ex.printStackTrace();
 		}
 	}
 	/**
-	 * 
-	 */
-	//private static void versions(){
-		//versions[0] = new Version("DES0", new int[]{0, 1} );
-		//versions[1] = new Version("DES1", new int[]{0} );
-		//versions[2] = new Version("DES2", new int[]{2, 1} );
-		//versions[3] = new Version("DES3", new int[]{2} );
-	//}
-	/**
-	 * @param i
-	 * @return
-	 */
-	//private static Version Versions(int i){
-		//return versions[i];
-	//}
-	/**
 	 * @param scanner 
 	 * @throws UnsupportedEncodingException 
 	 * @throws FileNotFoundException 
-	 * 
 	 */
 	private static void decryption(String ciphertext, String key) throws FileNotFoundException, UnsupportedEncodingException{
-	    PrintWriter dWriter = new PrintWriter("DECRYPTIONOUTPUT.txt", "UTF-8");
+	    PrintWriter dWriter = new PrintWriter(OUTPUTTXT, "UTF-8");
 		DES des = new DES(DES.Version.DES0);
 		des.initializeCipher(DES.DESMode.DECRYPT, key);
 		des.begin(ciphertext);
@@ -99,7 +79,7 @@ public class Application {
 		// Encrypting the plaintext P under different keys (by 1-bit).
 		DES[][] desKBD = plaintextUnderDifferentKeys(key.length(), plaintext, k);
 	
-	    PrintWriter eWriter = new PrintWriter("ENCRYPTIONOUTPUT.txt", "UTF-8");
+	    PrintWriter eWriter = new PrintWriter(OUTPUTTXT, "UTF-8");
 	    eWriter.write("ENCRYPTION\n");
 	    eWriter.write("Plaintext P:" + plaintext+"\n");
 	    eWriter.write("Key K:" + key+"\t\n");
