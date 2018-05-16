@@ -4,15 +4,25 @@
  * 	2) Jonathan Low: 3279624
  * */
 public class Round{	
+	//sInstructions contains the order of the steps of the round. This is used for DES1/2/3 and is not part of the original DES standard
+	//it is used to test how insecure DES is when you modify any part of the algorithm
 	private int[] sInstructions; 
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
+	
 	/**
 	 * Constructor: Round
 	 * @param sInstructions: Sequence of individual ciphers to be performed. 
 	 */
+<<<<<<< HEAD
 	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
+=======
+	public Round(int[] sInstructions){
+		this.sInstructions = sInstructions;
+	}
+
+>>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param lHalf: 32-bit integer (Left half of the text).
 	 * @param rHalf: 32-bit integer (Right half of the text).
@@ -24,11 +34,12 @@ public class Round{
 		lHalf = rHalf;
 		// Subject the right side of the text, through a series of 
 		// permutations and substitutions. 
-		rHalf = function(rHalf, subKey);
+		rHalf = function(rHalf, subKey); //Apply our round function to the right half using the appropriate subkey
 		// Bitwise operator exclusiveOR.
-		rHalf = Bitwise.xor(leftSideUsedForXor, rHalf);
+		rHalf = Bitwise.xor(leftSideUsedForXor, rHalf); //And XOR the left half over it
 		return lHalf+rHalf;
 	}
+
 	/**
 	 * @param rHalf: 32-bit integer (Right half initial text).
 	 * @param subKey: 48-bit integer.
@@ -47,11 +58,13 @@ public class Round{
 		}
 		return rHalf;
 	}
+
 	/**
 	 * @param i
 	 * @param text
 	 * @return
 	 */
+<<<<<<< HEAD
 	private String executeAdditionalCiphers(int i, String text){
 		switch(i){
 		case 0:
@@ -63,24 +76,59 @@ public class Round{
 		case 2:
 			text = inverseExpansion(text);
 			break;
+=======
+	private String execute(int i, String text){ //run the appropriate method
+		switch(i){
+			case 0:
+				text = substitution(text); //Do the sBoxes
+				break;
+			case 1:
+				text = permutation(text);
+				break;
+			case 2:
+				text = inverseExpansion(text);
+				break;
+>>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 		}
 		return text;
 	}
+
 	/**
 	 * @param text
 	 * @return
 	 */
+<<<<<<< HEAD
 	public String expansion(String text){return Transposition.permute(text, eTable);}
+=======
+	private String expansion(String text){
+		return Transposition.permute(text, eTable);
+	}
+
+>>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param text
 	 * @return
 	 */
+<<<<<<< HEAD
 	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
+=======
+	private String inverseExpansion(String text){
+		return Transposition.permute(text, iETable);
+	}
+
+>>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param text
 	 * @return
 	 */
+<<<<<<< HEAD
 	public String permutation(String text){ return Transposition.permute(text, pTable); }
+=======
+	private String permutation(String text){
+		return Transposition.permute(text, pTable);
+	}
+
+>>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * 
 	 */
@@ -142,11 +190,12 @@ public class Round{
 			{2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
 		},
 	};
+
 	/**
 	 * @param text
 	 * @return
 	 */
-	public String substitution(String text){
+	private String substitution(String text){
 		String value="";
 		String textBlock="";
 
@@ -154,7 +203,7 @@ public class Round{
 		for(int i=0; i<8; i++){
 			textBlock=text.substring((i*6),(i*6)+6);
 
-			//use the middle 4 bits for the row and the outter 2 bits for the column
+			//use the middle 4 bits for the row and the outer 2 bits for the column
 			int row=binaryToDec(textBlock.substring(1,5));
 			int column=binaryToDec(textBlock.substring(0,1)+textBlock.substring(5,6));
 			
@@ -173,29 +222,29 @@ public class Round{
 	}
 
 	/**
-	 * @param text
-	 * @return
+	 * @param text accepts a string containing binary digits and return the integer conversion of it
+	 * @return value
 	 */
 	private int binaryToDec(String text)
 	{
 		int multiplier=1;
 		int value=0;
 
-		for(int i=text.length(); i>0; i--)
+		for(int i=text.length(); i>0; i--) //loop backwards through the string
 		{
 			if(text.substring(i-1,i).equals("1"))
 			{
-				value+=multiplier;
+				value+=multiplier; //add our multiplier value for each 1, add nothing for 0's
 			}
-			multiplier*=2;
+			multiplier*=2; //double multiplier value for each digit
 		}
 
 		return value;
 	}
 
 	/**
-	 * @param num
-	 * @return
+	 * @param num accepts and integer and return a binary string conversion of it
+	 * @return value
 	 */
 	private String decimalToBin(int num)
 	{
