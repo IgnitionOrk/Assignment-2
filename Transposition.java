@@ -12,8 +12,8 @@ public class Transposition {
 	 */
 	public static String permute(String text, int[] table){
 		String permutation = "";
-		for(int i = 0; i < table.length; i++){
-			permutation += text.substring(table[i] - 1, table[i]);
+		for(int i = 0; i < table.length; i++){ //loop through the table from start to end
+			permutation += text.substring(table[i] - 1, table[i]); //form the permuted string character by character
 		}
 		return permutation;
 	}

@@ -26,8 +26,9 @@ public class DES {
 			this.value = value;
 		}
 	}
+
 	/**
-	 * 
+	 * This enum contains the specifications for the 4 DES versions used in the assignment
 	 * */
 	public enum Version{
 		DES0("DES0", new int[]{0, 1} ),
@@ -57,33 +58,33 @@ public class DES {
 			this.sequence = sequence;
 		}
 	}  
+
+
 	private DESMode mode;
 	private Version version;
 	private KeyGenerator keyGenerator;
 	private Round round;
-	/**
-	 * Variables used to calculated th avalanche effect. 
-	 * */
+	
 	private String plaintext;
 	private String ciphertext;
 	private final int[] initialPermutationTable = new int[]{58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7};
 	private final int[] finalPermutationTable = new int[]{40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25};
 	private final int ROUNDS = 16;
-	private String[] roundText = new String[ROUNDS];
+	private String[] roundText = new String[ROUNDS]; //contains the text at the end of each round. Used to calculate Avalanche effect
+
+
 	/**
 	 * @param version: The version of DES.
-	 * @param round: Round process, used to transform the text. 
-	 * @param text: 64-bit text we wish to either encrypt or decrypt. 
-	 * @param key: 56-bit key. 
-	 * @param mode: The mode of DES either encrypting or decrypting the text. 
 	 */
 	public DES(Version version){
 		this.version = version;
-		this.round = new Round(version.getSequence());
+		this.round = new Round(version.getSequence()); //use the specification found in Version to get the function sequence
 	}
+
 	/**
 	 * @param mode
-	 * @param key
+	 * @param key: 56-bit key. 
+	 * @param mode: The mode of DES either encrypting or decrypting the text. 
 	 */
 	public void initializeCipher(DESMode mode, String key){
 		this.mode = mode;
@@ -91,6 +92,7 @@ public class DES {
 		// It defines if the generated subkeys are applied in reverse order. 
 		this.keyGenerator = new KeyGenerator(mode.valueOf(), key);
 	}
+
 	/**
 	 * @param text: The text DES is going to transform into either plaintext or ciphertext. 
 	 */
@@ -106,6 +108,7 @@ public class DES {
 			ciphertext = transform(plaintext);
 		}
 	}
+
 	/**
 	 * @param text
 	 * @return
@@ -120,6 +123,7 @@ public class DES {
 		// Final (Inverse) permutation; 
 		return Transposition.permute(fpermutatedInput, finalPermutationTable);
 	}
+
 	/**
 	 * @param text
 	 * @return
@@ -127,15 +131,17 @@ public class DES {
 	private String swap(String text){
 		return right(text)+left(text);
 	}
+
 	/**
 	 * @param text
 	 * @return
 	 */
 	private String rounds(String text){
 		for(int i = 0; i < ROUNDS; i++){
-			text = round.process(left(text), right(text), keyGenerator.subkey());
+			text = round.process(left(text), right(text), keyGenerator.subkey()); //call our Round on the text with the correct subkey
 			roundText[i] = text;
 		}
+
 		return text;
 	}
 
@@ -161,6 +167,7 @@ public class DES {
 	public String version(){
 		return version.getVersion();
 	}
+
 	/**
 	 * @return
 	 */
@@ -174,6 +181,7 @@ public class DES {
 	public String getPlaintext(){
 		return plaintext;
 	}
+
 	/**
 	 * @param pos
 	 * @return

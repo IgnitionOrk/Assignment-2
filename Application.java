@@ -18,14 +18,19 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
+
 public class Application {
 	private static final int NUMBEROFVERSIONS = 4;
 	private static final String OUTPUTTXT = "output.txt";	
+
 	public static void main(String[] args) throws FileNotFoundException {
+		//load and read the file
 		Scanner scanner = new Scanner(new File(args[0]));
 		String bit = scanner.nextLine();
 		String text = scanner.nextLine();
 		String key = scanner.nextLine();
+		
+		//use the first line to determine if we're encrypting or decrypting
 		try{
 			if(bit.equals("0")){
 				encryption(text, key);
@@ -34,10 +39,12 @@ public class Application {
 				decryption(text, key);
 			}
 		}
+
 		catch(Exception ex){
 			ex.printStackTrace();
 		}
 	}
+
 	/**
 	 * @param scanner 
 	 * @throws UnsupportedEncodingException 
@@ -45,15 +52,19 @@ public class Application {
 	 */
 	private static void decryption(String ciphertext, String key) throws FileNotFoundException, UnsupportedEncodingException{
 	    PrintWriter dWriter = new PrintWriter(OUTPUTTXT, "UTF-8");
-		DES des = new DES(DES.Version.DES0);
-		des.initializeCipher(DES.DESMode.DECRYPT, key);
-		des.begin(ciphertext);
+		
+		DES des = new DES(DES.Version.DES0); //DES0 is the original DES algorithm
+		des.initializeCipher(DES.DESMode.DECRYPT, key); //initialise to decrypt and use the supplied 56bit key
+		des.begin(ciphertext); //decrypt our ciphertext
+		
 		dWriter.write("DECRYPTION\n");
 		dWriter.write("Ciphertext C:" + des.getCiphertext()+"\n");
 		dWriter.write("Key K:" + key+"\n");
 		dWriter.write("Plaintext P:"+ des.getPlaintext()+"\n");
+		
 		dWriter.close();
 	}
+
 	/**
 	 * @param scanner 
 	 * @throws UnsupportedEncodingException 
@@ -62,9 +73,9 @@ public class Application {
 	 */
 	private static void encryption(String plaintext, String key) throws FileNotFoundException, UnsupportedEncodingException{
 		// No difference in either plaintext P or key K. 
-		DES[] desVersions = new DES[NUMBEROFVERSIONS];
+		DES[] desVersions = new DES[NUMBEROFVERSIONS]; //4 DES versions, the original and a few different modified versions
 		for(int i = 0; i < NUMBEROFVERSIONS; i++){
-			desVersions[i] = new DES(DES.Version.values()[i]);
+			desVersions[i] = new DES(DES.Version.values()[i]); //Create a DES object for each version
 			// Encrypt P under K;
 			desVersions[i].initializeCipher(DES.DESMode.ENCRYPT, key);
 			desVersions[i].begin(plaintext);
@@ -84,13 +95,16 @@ public class Application {
 	    eWriter.write("Plaintext P:" + plaintext+"\n");
 	    eWriter.write("Key K:" + key+"\t\n");
 	    eWriter.write("Ciphertext C:"+ desVersions[0].getCiphertext()+"\n");
+
 		eWriter.write("\nAvalanche:\nP and Pi under K\nRound:\tDES0\tDES1\tDES2\tDES3\n");
 	    avalanche(desVersions, desPDB, eWriter, plaintext);
 		eWriter.write("\nP under K and Ki\nRound:\tDES0\tDES1\tDES2\tDES3\n");
 	    avalanche(desVersions, desKBD, eWriter, plaintext);
+
 		eWriter.close();
 
 	}
+
 	/**
 	 * @param length
 	 * @param key
@@ -99,17 +113,18 @@ public class Application {
 	 */
 	private static DES[][] differentPlaintextsUnderKeyK(int length, String key, String[] iPlaintexts){
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
-		for(int x = 0; x < NUMBEROFVERSIONS; x++){
+
+		for(int x = 0; x < NUMBEROFVERSIONS; x++){ // For each DES algorithm...
 			for(int y = 0; y < length; y++){
 				tempDES[x][y] = new DES(DES.Version.values()[x]);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, key);
-				tempDES[x][y].begin(iPlaintexts[y]);
+				tempDES[x][y].begin(iPlaintexts[y]); // Encrypt each plaintext under key K
 			}	
 		}
 		
-		//beginDES(tempDES, length);
 		return tempDES;
 	}
+
 	/**
 	 * @param length
 	 * @param key
@@ -125,12 +140,12 @@ public class Application {
 				tempDES[x][y].begin(plaintext);
 			}
 		}
-		//beginDES(tempDES, length);
+		
 		return tempDES;
 	}
 
 	/**
-	 * Calculates the avalanche effect for each of the, 
+	 * Calculates the avalanche effect for each of the DES versions
 	 * @return
 	 */
 	private static String avalanche(DES[] desVersions, DES[][] desWith1BitDifference, PrintWriter writer, String text){
@@ -138,10 +153,11 @@ public class Application {
 		double avalanche1=0;
 		double avalanche2=0;
 		double avalanche3=0;
+
 		for(int i=0; i <= 16; i++)
 		{	
 			if(i == 0){
-				for(int o=0; o < desWith1BitDifference[0].length; o++) //for each round, check the average avalanche for each of Pi
+				for(int o=0; o < desWith1BitDifference[0].length; o++) //for each round, check the average avalanche for each of Pi/Ki
 				{
 					avalanche0+=checkDifferences(text, desWith1BitDifference[0][o].getPlaintext());
 					avalanche1+=checkDifferences(text, desWith1BitDifference[1][o].getPlaintext());
@@ -154,7 +170,8 @@ public class Application {
 				avalanche1=1;
 				avalanche2=1;
 				avalanche3=1;
-				for(int o=0; o < desWith1BitDifference[0].length; o++) //for each round, check the average avalanche for each of Pi
+
+				for(int o=0; o < desWith1BitDifference[0].length; o++) //for each round, check the average avalanche for each of Pi/Ki
 				{
 					avalanche0+=checkDifferences(desVersions[0].getRoundText(i - 1), desWith1BitDifference[0][o].getRoundText(i - 1));
 					avalanche1+=checkDifferences(desVersions[1].getRoundText(i - 1), desWith1BitDifference[1][o].getRoundText(i - 1));
@@ -163,10 +180,10 @@ public class Application {
 				}
 			}
 			
-			int a0=(int)Math.round(avalanche0/64.0); //take the average
-			int a1=(int)Math.round(avalanche1/64.0); //take the average
-			int a2=(int)Math.round(avalanche2/64.0); //take the average
-			int a3=(int)Math.round(avalanche3/64.0); //take the average
+			int a0=(int)Math.round(avalanche0/desWith1BitDifference[0].length); //take the average
+			int a1=(int)Math.round(avalanche1/desWith1BitDifference[0].length); //take the average
+			int a2=(int)Math.round(avalanche2/desWith1BitDifference[0].length); //take the average
+			int a3=(int)Math.round(avalanche3/desWith1BitDifference[0].length); //take the average
 
 			writer.write((i)+"\t\t"+a0+"\t\t"+a1+"\t\t"+a2+"\t\t"+a3+"\n");
 		}
@@ -179,8 +196,11 @@ public class Application {
 	 */
 	private static String[] bitDifferenceArray(String text){
 		String[] bitDifference = new String[64];
-		for(int i=0; i<text.length(); i++){
-			bitDifference[i] = text;
+
+		for(int i=0; i<text.length(); i++){ //for each character in String text
+			bitDifference[i] = text; //create a string that matches it
+
+			//then invert a single bit at index i
 			if(bitDifference[i].charAt(i)=='0'){
 				bitDifference[i]=bitDifference[i].substring(0,i)+"1"+bitDifference[i].substring(i+1);
 			}
@@ -188,8 +208,10 @@ public class Application {
 				bitDifference[i]=bitDifference[i].substring(0,i)+"0"+bitDifference[i].substring(i+1);
 			}
 		}
+
 		return bitDifference;
 	}
+
 	/**
 	 * @param a
 	 * @param b
@@ -199,11 +221,11 @@ public class Application {
 	{
 		int differenceCount=0;
 
-		for(int i=0; i<a.length(); i++)
+		for(int i=0; i<a.length(); i++) // Loop through the strings
 		{
 			if(i<b.length())
 			{
-				if(a.charAt(i)!=b.charAt(i))
+				if(a.charAt(i)!=b.charAt(i)) //increase the different count for every bit that doesn't match
 				{
 					differenceCount++;
 				}
