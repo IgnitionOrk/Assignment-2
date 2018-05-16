@@ -131,7 +131,7 @@ public class KeyGenerator {
 			index = (i + shift) % side.length(); //add the character located at side[i+SHIFT] where SHIFT is either 1 or 2
 			text += side.substring(index, index + 1);
 		}
-		
+
 		return text;
 	}
 
@@ -147,7 +147,6 @@ public class KeyGenerator {
 	 * @param iRound
 	 * @return
 	 */	
-	/*
 	public String subkey(){
 		if(reverseKeys){
 			rNumber--;
@@ -157,7 +156,6 @@ public class KeyGenerator {
 		}
 		return subkeys[rNumber];
 	}
-	*/
 
 	/**
 	 * @param key
