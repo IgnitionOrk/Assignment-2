@@ -12,10 +12,9 @@ public class Bitwise {
 	public static String xor(String text1, String text2){
 		String xored = "";
 		for(int i = 0; i < text1.length(); i++){
-			if(text1.charAt(i) == text2.charAt(i)){
-				xored += "0";
-			}
-			else{
+			if(text1.charAt(i) == text2.charAt(i)){ 
+				xored += "0";	
+			}else{
 				xored += "1";
 			}
 		}

@@ -33,10 +33,8 @@ public class KeyGenerator {
 	 */
 	private void generateSubkeys(String key){
 		if(reverseKeys){
-			// Begin at the very end of the generated subkey array.
 			this.rNumber = shifts.length;
-		}
-		else{
+		}else{
 			this.rNumber = -1;
 		}
 		iCount = 0;
@@ -67,8 +65,7 @@ public class KeyGenerator {
 		// If there is an even number of 'BITs' return the complement of BIT
 		if(count(sevenBits) % 2 == 0){
 			return COMPLEMENT;	
-		}
-		else{
+		}else{
 			return BIT;
 		}
 	}
@@ -128,8 +125,7 @@ public class KeyGenerator {
 	public String subkey(){
 		if(reverseKeys){
 			rNumber--;
-		}
-		else{
+		}else{
 			rNumber++;
 		}
 		return subkeys[rNumber];
@@ -138,14 +134,10 @@ public class KeyGenerator {
 	 * @param key
 	 * @return
 	 */
-	private String leftSide(String key){
-		return key.substring(0, (key.length() / 2));
-	}
+	private String leftSide(String key){ return key.substring(0, (key.length() / 2));}
 	/**
 	 * @param key
 	 * @return
 	 */
-	private String rightSide(String key){
-		return key.substring((key.length() / 2), key.length());
-	}
+	private String rightSide(String key){ return key.substring((key.length() / 2), key.length());}
 }

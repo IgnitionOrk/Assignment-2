@@ -85,9 +85,9 @@ public class Application {
 	    eWriter.write("Key K:" + key+"\t\n");
 	    eWriter.write("Ciphertext C:"+ desVersions[0].getCiphertext()+"\n");
 		eWriter.write("\nAvalanche:\nP and Pi under K\nRound:\tDES0\tDES1\tDES2\tDES3\n");
-	    avalanche(desVersions, desPDB, eWriter, plaintext);
+	    avalanche(plaintext.length(), desVersions, desPDB, eWriter, plaintext);
 		eWriter.write("\nP under K and Ki\nRound:\tDES0\tDES1\tDES2\tDES3\n");
-	    avalanche(desVersions, desKBD, eWriter, plaintext);
+	    avalanche(key.length(), desVersions, desKBD, eWriter, plaintext);
 		eWriter.close();
 
 	}
@@ -106,8 +106,6 @@ public class Application {
 				tempDES[x][y].begin(iPlaintexts[y]);
 			}	
 		}
-		
-		//beginDES(tempDES, length);
 		return tempDES;
 	}
 	/**
@@ -125,28 +123,69 @@ public class Application {
 				tempDES[x][y].begin(plaintext);
 			}
 		}
-		//beginDES(tempDES, length);
 		return tempDES;
 	}
 
 	/**
 	 * Calculates the avalanche effect for each of the, 
+	 * @param noOfBits 
 	 * @return
 	 */
-	private static String avalanche(DES[] desVersions, DES[][] desWith1BitDifference, PrintWriter writer, String text){
-		double avalanche0=0;
-		double avalanche1=0;
-		double avalanche2=0;
-		double avalanche3=0;
-		for(int i=0; i <= 16; i++)
+	private static void avalanche(int noOfBits, DES[] desVersions, DES[][] desWith1BitDifference, PrintWriter writer, String text){
+		int avalanche0=0;
+		int avalanche1=0;
+		int avalanche2=0;
+		int avalanche3=0;
+		
+		int[] avgAvalanche = new int[NUMBEROFVERSIONS];
+		
+		for(int x = 0 ; x < NUMBEROFVERSIONS; x++){
+			avgAvalanche[x] = average(desVersions[x].getPlaintext(), desWith1BitDifference[x]);
+		}
+		
+		String line = "0";
+		for(int x = 0; x < NUMBEROFVERSIONS; x++){
+			line += "\t\t"+avgAvalanche[x];
+		}
+		
+		line += "\n";
+		// Save the average no. of bits for the round. 
+		writer.write(line);
+		
+		for(int y = 1; y <= 16; y++){
+			for(int x = 0 ; x < NUMBEROFVERSIONS; x++){
+				avgAvalanche[x] = average(desVersions[x].getRoundText(x), desWith1BitDifference[x]);
+			}
+			
+			for(int x = 0; x < NUMBEROFVERSIONS; x++){
+				line += y+"\t\t"+avgAvalanche[x];
+			}
+			
+			line += "\n";
+			// Save the average no. of bits for the round. 
+			writer.write(line);
+			
+			line = "";
+		}
+		// After sixteen rounds calculate the average no of bits for each round. 
+		for(int i = 0; i <= 16; i++)
 		{	
 			if(i == 0){
-				for(int o=0; o < desWith1BitDifference[0].length; o++) //for each round, check the average avalanche for each of Pi
+				for(int x = 0 ; x < NUMBEROFVERSIONS; x++){
+					avgAvalanche[x] = average(desVersions[x].getPlaintext(), desWith1BitDifference[x]);
+				}
+				avalanche0 = average(desVersions[0].getPlaintext(), desWith1BitDifference[0]);
+				avalanche0 = average(desVersions[1].getPlaintext(), desWith1BitDifference[1]);
+				avalanche0 = average(desVersions[2].getPlaintext(), desWith1BitDifference[2]);
+				avalanche0 = average(desVersions[3].getPlaintext(), desWith1BitDifference[3]);
+
+				// calculate the average no of bits for the round. 
+				for(int o=0; o < noOfBits; o++)
 				{
-					avalanche0+=checkDifferences(text, desWith1BitDifference[0][o].getPlaintext());
-					avalanche1+=checkDifferences(text, desWith1BitDifference[1][o].getPlaintext());
-					avalanche2+=checkDifferences(text, desWith1BitDifference[2][o].getPlaintext());
-					avalanche3+=checkDifferences(text, desWith1BitDifference[3][o].getPlaintext());
+					avalanche0+=checkDifferences(desVersions[0].getPlaintext(), desWith1BitDifference[0][o].getPlaintext());
+					avalanche1+=checkDifferences(desVersions[1].getPlaintext(), desWith1BitDifference[1][o].getPlaintext());
+					avalanche2+=checkDifferences(desVersions[2].getPlaintext(), desWith1BitDifference[2][o].getPlaintext());
+					avalanche3+=checkDifferences(desVersions[3].getPlaintext(), desWith1BitDifference[3][o].getPlaintext());
 				}
 			}
 			else{
@@ -154,7 +193,8 @@ public class Application {
 				avalanche1=1;
 				avalanche2=1;
 				avalanche3=1;
-				for(int o=0; o < desWith1BitDifference[0].length; o++) //for each round, check the average avalanche for each of Pi
+				// calculate the average no of bits for the round. 
+				for(int o=0; o < noOfBits; o++)
 				{
 					avalanche0+=checkDifferences(desVersions[0].getRoundText(i - 1), desWith1BitDifference[0][o].getRoundText(i - 1));
 					avalanche1+=checkDifferences(desVersions[1].getRoundText(i - 1), desWith1BitDifference[1][o].getRoundText(i - 1));
@@ -163,14 +203,20 @@ public class Application {
 				}
 			}
 			
-			int a0=(int)Math.round(avalanche0/64.0); //take the average
-			int a1=(int)Math.round(avalanche1/64.0); //take the average
-			int a2=(int)Math.round(avalanche2/64.0); //take the average
-			int a3=(int)Math.round(avalanche3/64.0); //take the average
-
-			writer.write((i)+"\t\t"+a0+"\t\t"+a1+"\t\t"+a2+"\t\t"+a3+"\n");
+			int a0=(int)Math.round(avalanche0/noOfBits); //take the average
+			int a1=(int)Math.round(avalanche1/noOfBits); //take the average
+			int a2=(int)Math.round(avalanche2/noOfBits); //take the average
+			int a3=(int)Math.round(avalanche3/noOfBits); //take the average
+			
 		}
-		return "";
+	}
+	private static int average(String text, DES[] desWith1BitDifference){
+		int count = 0;
+		// calculate the average no of bits for the round. 
+		for(int o=0; o < desWith1BitDifference.length; o++){
+			count+=checkDifferences(text, desWith1BitDifference[o].getPlaintext());
+		}
+		return count / desWith1BitDifference.length;
 	}
 	
 	/**

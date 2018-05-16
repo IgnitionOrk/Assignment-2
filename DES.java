@@ -16,15 +16,8 @@ public class DES {
 		/**
 		 * @return: 
 		 */
-		public boolean valueOf(){
-			return value;
-		}
-		/**
-		 * @param value
-		 */
-		DESMode(boolean value){
-			this.value = value;
-		}
+		public boolean valueOf(){return this.value;}
+		DESMode(boolean value){ this.value = value;}
 	}
 	/**
 	 * 
@@ -39,15 +32,10 @@ public class DES {
 		private int[] sequence;
 
 		/**
-		 * @return
+		 * @return 
 		 */
-		public String getVersion(){
-			return version;
-		}
-
-		public int[] getSequence(){
-			return sequence;
-		}
+		public String getVersion(){ return version;	}
+		public int[] getSequence(){ return sequence;}
 
 		/**
 		 * @param value
@@ -99,8 +87,7 @@ public class DES {
 			// Decrypting the ciphertext to obtains its plaintext
 			ciphertext = text;
 			plaintext = transform(ciphertext);
-		}
-		else{
+		}else{
 			// Encrypting the plaintext to obtains its ciphertext
 			plaintext = text;
 			ciphertext = transform(plaintext);
@@ -124,9 +111,7 @@ public class DES {
 	 * @param text
 	 * @return
 	 */
-	private String swap(String text){
-		return right(text)+left(text);
-	}
+	private String swap(String text){ return right(text)+left(text); }
 	/**
 	 * @param text
 	 * @return
@@ -138,47 +123,32 @@ public class DES {
 		}
 		return text;
 	}
-
 	/**
 	 * @param text
 	 * @return
 	 */
-	private String left(String text){
-		return text.substring(0, (text.length() / 2));
-	}
-
+	private String left(String text){ return text.substring(0, (text.length() / 2)); }
 	/**
 	 * @param text
 	 * @return
 	 */
-	private String right(String text){
-		return text.substring((text.length() / 2), text.length());
-	}
+	private String right(String text){ return text.substring((text.length() / 2), text.length());}
+	/**
+	 * @return the version of DES. 
+	 */
+	public String version(){return version.getVersion();}
+	/**
+	 * @return the result after a block of 64-bit has been gone through DES Rounds.
+	 */
+	public String getCiphertext(){return ciphertext;}
 
 	/**
-	 * @return
+	 * @return the original 64-bit plaintext.
 	 */
-	public String version(){
-		return version.getVersion();
-	}
-	/**
-	 * @return
-	 */
-	public String getCiphertext(){
-		return ciphertext;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getPlaintext(){
-		return plaintext;
-	}
+	public String getPlaintext(){return plaintext;}
 	/**
 	 * @param pos
 	 * @return
 	 */
-	public String getRoundText(int pos){
-		return roundText[pos];
-	}
+	public String getRoundText(int pos){ return roundText[pos];}
 }

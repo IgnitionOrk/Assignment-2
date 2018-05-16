@@ -12,9 +12,7 @@ public class Round{
 	 * Constructor: Round
 	 * @param sInstructions: Sequence of individual ciphers to be performed. 
 	 */
-	public Round(int[] sInstructions){
-		this.sInstructions = sInstructions;
-	}
+	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
 	/**
 	 * @param lHalf: 32-bit integer (Left half of the text).
 	 * @param rHalf: 32-bit integer (Right half of the text).
@@ -45,7 +43,7 @@ public class Round{
 		// Execute additional methods, in the order in which they
 		// were expressed in the int array sInstructions. 
 		for(int i = 0; i < sInstructions.length; i++){
-			rHalf = execute(sInstructions[i], rHalf);
+			rHalf = executeAdditionalCiphers(sInstructions[i], rHalf);
 		}
 		return rHalf;
 	}
@@ -54,17 +52,17 @@ public class Round{
 	 * @param text
 	 * @return
 	 */
-	private String execute(int i, String text){
+	private String executeAdditionalCiphers(int i, String text){
 		switch(i){
-			case 0:
-				text = substitution(text);
-				break;
-			case 1:
-				text = permutation(text);
-				break;
-			case 2:
-				text = inverseExpansion(text);
-				break;
+		case 0:
+			text = substitution(text);
+			break;
+		case 1:
+			text = permutation(text);
+			break;
+		case 2:
+			text = inverseExpansion(text);
+			break;
 		}
 		return text;
 	}
@@ -72,23 +70,17 @@ public class Round{
 	 * @param text
 	 * @return
 	 */
-	public String expansion(String text){
-		return Transposition.permute(text, eTable);
-	}
+	public String expansion(String text){return Transposition.permute(text, eTable);}
 	/**
 	 * @param text
 	 * @return
 	 */
-	public String inverseExpansion(String text){
-		return Transposition.permute(text, iETable);
-	}
+	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
 	/**
 	 * @param text
 	 * @return
 	 */
-	public String permutation(String text){
-		return Transposition.permute(text, pTable);
-	}
+	public String permutation(String text){ return Transposition.permute(text, pTable); }
 	/**
 	 * 
 	 */
@@ -159,8 +151,7 @@ public class Round{
 		String textBlock="";
 
 		//break the text into 8 different 6 bit blocks
-		for(int i=0; i<8; i++)
-		{
+		for(int i=0; i<8; i++){
 			textBlock=text.substring((i*6),(i*6)+6);
 
 			//use the middle 4 bits for the row and the outter 2 bits for the column
@@ -171,8 +162,7 @@ public class Round{
 			String block=decimalToBin(sBoxes[i][column][row]);
 			
 			//make sure it is 4 bits long
-			while(block.length()<4)
-			{
+			while(block.length()<4){
 				block="0"+block;
 			}
 
