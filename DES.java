@@ -24,9 +24,9 @@ public class DES {
 	 * This enum contains the specifications for the 4 DES versions used in the assignment
 	 * */
 	public enum Version{
-		DES0("DES0", new int[]{0, 1} ),
+		DES0("DES0", new int[]{0,1} ),
 		DES1("DES1", new int[]{0} ),
-		DES2("DES2", new int[]{2, 1} ),
+		DES2("DES2", new int[]{2,1} ),
 		DES3("DES3", new int[]{2} );
 
 		private String version;
@@ -115,14 +115,7 @@ public class DES {
 	 * @param text
 	 * @return
 	 */
-<<<<<<< HEAD
 	private String swap(String text){ return right(text)+left(text); }
-=======
-	private String swap(String text){
-		return right(text)+left(text);
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param text
 	 * @return
@@ -148,14 +141,7 @@ public class DES {
 	/**
 	 * @return the version of DES. 
 	 */
-<<<<<<< HEAD
 	public String version(){return version.getVersion();}
-=======
-	public String version(){
-		return version.getVersion();
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @return the result after a block of 64-bit has been gone through DES Rounds.
 	 */
@@ -164,14 +150,7 @@ public class DES {
 	/**
 	 * @return the original 64-bit plaintext.
 	 */
-<<<<<<< HEAD
 	public String getPlaintext(){return plaintext;}
-=======
-	public String getPlaintext(){
-		return plaintext;
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param pos
 	 * @return

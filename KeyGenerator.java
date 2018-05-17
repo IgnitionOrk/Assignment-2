@@ -157,14 +157,7 @@ public class KeyGenerator {
 	 * @param key
 	 * @return
 	 */
-<<<<<<< HEAD
 	private String leftSide(String key){ return key.substring(0, (key.length() / 2));}
-=======
-	private String leftSide(String key){
-		return key.substring(0, (key.length() / 2)); //return characters 0 to length/2
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param key
 	 * @return

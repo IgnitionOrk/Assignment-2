@@ -15,14 +15,7 @@ public class Round{
 	 * Constructor: Round
 	 * @param sInstructions: Sequence of individual ciphers to be performed. 
 	 */
-<<<<<<< HEAD
 	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
-=======
-	public Round(int[] sInstructions){
-		this.sInstructions = sInstructions;
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param lHalf: 32-bit integer (Left half of the text).
 	 * @param rHalf: 32-bit integer (Right half of the text).
@@ -64,7 +57,6 @@ public class Round{
 	 * @param text
 	 * @return
 	 */
-<<<<<<< HEAD
 	private String executeAdditionalCiphers(int i, String text){
 		switch(i){
 		case 0:
@@ -76,19 +68,6 @@ public class Round{
 		case 2:
 			text = inverseExpansion(text);
 			break;
-=======
-	private String execute(int i, String text){ //run the appropriate method
-		switch(i){
-			case 0:
-				text = substitution(text); //Do the sBoxes
-				break;
-			case 1:
-				text = permutation(text);
-				break;
-			case 2:
-				text = inverseExpansion(text);
-				break;
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 		}
 		return text;
 	}
@@ -97,38 +76,17 @@ public class Round{
 	 * @param text
 	 * @return
 	 */
-<<<<<<< HEAD
 	public String expansion(String text){return Transposition.permute(text, eTable);}
-=======
-	private String expansion(String text){
-		return Transposition.permute(text, eTable);
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param text
 	 * @return
 	 */
-<<<<<<< HEAD
 	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
-=======
-	private String inverseExpansion(String text){
-		return Transposition.permute(text, iETable);
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * @param text
 	 * @return
 	 */
-<<<<<<< HEAD
 	public String permutation(String text){ return Transposition.permute(text, pTable); }
-=======
-	private String permutation(String text){
-		return Transposition.permute(text, pTable);
-	}
-
->>>>>>> 4dfc239164089a81029666a79b4761b8bdd29130
 	/**
 	 * 
 	 */
