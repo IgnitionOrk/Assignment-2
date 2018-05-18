@@ -21,6 +21,7 @@ import java.util.Scanner;
 
 public class Application {
 	private static final int NUMBEROFVERSIONS = 4;
+	private static final int NUMBEROFROUNDS = 16;
 	private static final String OUTPUTTXT = "output.txt";	
 	public static void main(String[] args) throws FileNotFoundException {	
 		try{
@@ -137,41 +138,29 @@ public class Application {
 	 * @return
 	 */
 	private static void avalanche(int noOfBits, DES[] desVersions, DES[][] desWith1BitDifference, PrintWriter writer){
-		int[] avgAvalanche = new int[NUMBEROFVERSIONS];
-		
-		// Calculate the average for round 0;
-		// Calculate the average for the rest of the rounds 1 - 16.
-	
-		// Calculate the round 0;
-		String line = "0"; 
-		for(int x = 0 ; x < NUMBEROFVERSIONS; x++){
-			for(int y = 0; y < noOfBits; y++){
-				avgAvalanche[x] += checkDifferences(desVersions[x].getPlaintext(), desWith1BitDifference[x][y].getPlaintext());
-			}
-			avgAvalanche[x] = avgAvalanche[x] / noOfBits;
-			line += "\t\t"+avgAvalanche[x];
-		}
-
-		
-		line += "\n";
-		writer.write(line);
-		line = "";
-		
-		// For each round;
-		for(int round = 1; round <= 16; round++){
-			line = Integer.toString(round);
-			// Calculate the average change of bits for each VERSION of DES;
+		// 16 rounds, however round 0, is based against the plaintext, that hasn't gone through the rounds. 
+		double[][] avgAvalanche = new double[NUMBEROFVERSIONS][NUMBEROFROUNDS + 1];
+		for(int round = 0; round < NUMBEROFROUNDS + 1; round++){
 			for(int version = 0 ; version < NUMBEROFVERSIONS; version++){
 				for(int y = 0; y < noOfBits; y++){
-					avgAvalanche[version] += checkDifferences(desVersions[version].getRoundText(round - 1), desWith1BitDifference[version][y].getRoundText(round - 1));
-				}
-				
-				// Calculate the average. 
-				avgAvalanche[version] = avgAvalanche[version] / noOfBits;
-				line += "\t\t"+avgAvalanche[version];
+					avgAvalanche[version][round] += checkDifferences(desVersions[version].getRoundText(round), desWith1BitDifference[version][y].getRoundText(round));
+				}		
+				avgAvalanche[version][round] = Math.round(avgAvalanche[version][round] / noOfBits);
 			}
-			line+="\n";
-			writer.write(line);
+		}
+		writeToFile(avgAvalanche, writer);
+	}
+	/**
+	 * @param data
+	 * @param writer
+	 */
+	private static void writeToFile(double [][] data, PrintWriter writer){
+		for(int i = 0; i < NUMBEROFROUNDS + 1; i++){
+			writer.write(""+i);
+			for(int y = 0; y < NUMBEROFVERSIONS; y++){
+				writer.write("\t\t"+(int)data[y][i]);
+			}
+			writer.write("\n");
 		}
 	}
 	/**

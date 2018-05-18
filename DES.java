@@ -24,10 +24,10 @@ public class DES {
 	 * This enum contains the specifications for the 4 DES versions used in the assignment
 	 * */
 	public enum Version{
-		DES0("DES0", new int[]{0,1} ),
-		DES1("DES1", new int[]{0} ),
-		DES2("DES2", new int[]{2,1} ),
-		DES3("DES3", new int[]{2} );
+		DES0("DES0", new int[]{0,1}),
+		DES1("DES1", new int[]{0}),
+		DES2("DES2", new int[]{2,1}),
+		DES3("DES3", new int[]{2});
 
 		private String version;
 		private int[] sequence;
@@ -155,5 +155,9 @@ public class DES {
 	 * @param pos
 	 * @return
 	 */
-	public String getRoundText(int pos){ return roundText[pos];}
+	public String getRoundText(int pos){ 
+		if(pos == 0){
+			return plaintext;
+		}
+		return roundText[pos - 1];}
 }
