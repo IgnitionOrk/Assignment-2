@@ -47,7 +47,7 @@ public class Application {
 	 */
 	private static void decryption(String ciphertext, String key) throws FileNotFoundException, UnsupportedEncodingException{
 	    PrintWriter dWriter = new PrintWriter(OUTPUTTXT, "UTF-8");
-		DES des = new DES(DES.Version.DES0); //DES0 is the original DES algorithm
+		DES des = new DES(DES.Version.DES0, NUMBEROFROUNDS); //DES0 is the original DES algorithm
 		des.initializeCipher(DES.DESMode.DECRYPT, key); //initialise to decrypt and use the supplied 56bit key
 		des.begin(ciphertext);
 		dWriter.write("DECRYPTION\n");
@@ -67,7 +67,7 @@ public class Application {
 		// No difference in either plaintext P or key K. 
 		DES[] desVersions = new DES[NUMBEROFVERSIONS]; //4 DES versions, the original and a few different modified versions
 		for(int i = 0; i < NUMBEROFVERSIONS; i++){
-			desVersions[i] = new DES(DES.Version.values()[i]); //Create a DES object for each version
+			desVersions[i] = new DES(DES.Version.values()[i], NUMBEROFROUNDS); //Create a DES object for each version
 			// Encrypt P under K;
 			desVersions[i].initializeCipher(DES.DESMode.ENCRYPT, key);
 			desVersions[i].begin(plaintext);
@@ -106,7 +106,7 @@ public class Application {
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
 		for(int x = 0; x < NUMBEROFVERSIONS; x++){ // For each DES algorithm...
 			for(int y = 0; y < length; y++){
-				tempDES[x][y] = new DES(DES.Version.values()[x]);
+				tempDES[x][y] = new DES(DES.Version.values()[x], NUMBEROFROUNDS);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, key);
 				tempDES[x][y].begin(iPlaintexts[y]); // Encrypt each plaintext under key K
 			}	
@@ -124,7 +124,7 @@ public class Application {
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
 		for(int x = 0; x < NUMBEROFVERSIONS; x++){
 			for(int y = 0; y < length; y++){
-				tempDES[x][y] = new DES(DES.Version.values()[x]);
+				tempDES[x][y] = new DES(DES.Version.values()[x], NUMBEROFROUNDS);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, iKeys[y]);
 				tempDES[x][y].begin(plaintext);
 			}
