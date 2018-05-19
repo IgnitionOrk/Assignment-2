@@ -1,5 +1,4 @@
-/**
- * Student name: Student Number:
+/* Student name: Student Number:
 
  * 	1) Ryan Cunneen: 3179234
  * 	2) Jonathan Low: 3279624
@@ -9,10 +8,8 @@
  * It will also encrypt each message P under every possible Ki where Ki differs from key K by 1 bit.
  * As well as encrypt each message Pi under key K, where Pi is every possible message that differs from P by 1 bit.
  * Finally it will check the average difference between the text generated at the end of each of the 16 rounds for Pi
- *	and that of message P (and the same for Ki and K). It does this for each algorithm DES0/1/2/3 and demonstrates how much a small
- *	change to the algorithm affects the security of the cipher.
- * */
-
+ * and that of message P (and the same for Ki and K). It does this for each algorithm DES0/1/2/3 and demonstrates how much a small
+ * change to the algorithm affects the security of the cipher. */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -21,19 +18,22 @@ import java.util.Scanner;
 
 public class Application {
 	private static final int NUMBEROFVERSIONS = 4;
-	private static final int NUMBEROFROUNDS = 16;
-	private static final String OUTPUTTXT = "output.txt";	
-	public static void main(String[] args) throws FileNotFoundException {	
+	
+	/* @param args: Contains the arguments used for the input and output files. */
+	public static void main(String[] args) {	
 		try{
-			//load and read the file
+			// Name of the file containing the text, and key. 
 			Scanner scanner = new Scanner(new File(args[0]));
+			
+			// Name of the file the data will be saved to. 
+			String output = args[1];
 			String bit = scanner.nextLine();
 			String text = scanner.nextLine();
 			String key = scanner.nextLine();
 			if(bit.equals("0")){
-				encryption(text, key);
+				encryption(text, key, output);
 			}else{
-				decryption(text, key);
+				decryption(text, key, output);
 			}
 		}catch(Exception ex){
 			ex.printStackTrace();
@@ -45,9 +45,9 @@ public class Application {
 	 * @throws UnsupportedEncodingException 
 	 * @throws FileNotFoundException 
 	 */
-	private static void decryption(String ciphertext, String key) throws FileNotFoundException, UnsupportedEncodingException{
-	    PrintWriter dWriter = new PrintWriter(OUTPUTTXT, "UTF-8");
-		DES des = new DES(DES.Version.DES0, NUMBEROFROUNDS); //DES0 is the original DES algorithm
+	private static void decryption(String ciphertext, String key, String output) throws FileNotFoundException, UnsupportedEncodingException{
+	    PrintWriter dWriter = new PrintWriter(output, "UTF-8");
+		DES des = new DES(DES.Version.DES0); //DES0 is the original DES algorithm
 		des.initializeCipher(DES.DESMode.DECRYPT, key); //initialise to decrypt and use the supplied 56bit key
 		des.begin(ciphertext);
 		dWriter.write("DECRYPTION\n");
@@ -57,17 +57,14 @@ public class Application {
 		dWriter.close();
 	}
 
-	/**
-	 * @param scanner 
-	 * @throws UnsupportedEncodingException 
-	 * @throws FileNotFoundException 
-	 * 
+	/* @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException
 	 */
-	private static void encryption(String plaintext, String key) throws FileNotFoundException, UnsupportedEncodingException{
+	private static void encryption(String plaintext, String key, String output) throws FileNotFoundException, UnsupportedEncodingException{
 		// No difference in either plaintext P or key K. 
 		DES[] desVersions = new DES[NUMBEROFVERSIONS]; //4 DES versions, the original and a few different modified versions
 		for(int i = 0; i < NUMBEROFVERSIONS; i++){
-			desVersions[i] = new DES(DES.Version.values()[i], NUMBEROFROUNDS); //Create a DES object for each version
+			desVersions[i] = new DES(DES.Version.values()[i]); //Create a DES object for each version
 			// Encrypt P under K;
 			desVersions[i].initializeCipher(DES.DESMode.ENCRYPT, key);
 			desVersions[i].begin(plaintext);
@@ -82,7 +79,7 @@ public class Application {
 		// Encrypting the plaintext P under different keys (by 1-bit).
 		DES[][] desKBD = plaintextUnderDifferentKeys(key.length(), plaintext, k);
 	
-	    PrintWriter eWriter = new PrintWriter(OUTPUTTXT, "UTF-8");
+	    PrintWriter eWriter = new PrintWriter(output, "UTF-8");
 	    eWriter.write("ENCRYPTION\n");
 	    eWriter.write("Plaintext P:" + plaintext+"\n");
 	    eWriter.write("Key K:" + key+"\t\n");
@@ -106,7 +103,7 @@ public class Application {
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
 		for(int x = 0; x < NUMBEROFVERSIONS; x++){ // For each DES algorithm...
 			for(int y = 0; y < length; y++){
-				tempDES[x][y] = new DES(DES.Version.values()[x], NUMBEROFROUNDS);
+				tempDES[x][y] = new DES(DES.Version.values()[x]);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, key);
 				tempDES[x][y].begin(iPlaintexts[y]); // Encrypt each plaintext under key K
 			}	
@@ -124,7 +121,7 @@ public class Application {
 		DES[][] tempDES = new DES[NUMBEROFVERSIONS][length];
 		for(int x = 0; x < NUMBEROFVERSIONS; x++){
 			for(int y = 0; y < length; y++){
-				tempDES[x][y] = new DES(DES.Version.values()[x], NUMBEROFROUNDS);
+				tempDES[x][y] = new DES(DES.Version.values()[x]);
 				tempDES[x][y].initializeCipher(DES.DESMode.ENCRYPT, iKeys[y]);
 				tempDES[x][y].begin(plaintext);
 			}
@@ -139,8 +136,8 @@ public class Application {
 	 */
 	private static void avalanche(int noOfBits, DES[] desVersions, DES[][] desWith1BitDifference, PrintWriter writer){
 		// 16 rounds, however round 0, is based against the plaintext, that hasn't gone through the rounds. 
-		double[][] avgAvalanche = new double[NUMBEROFVERSIONS][NUMBEROFROUNDS + 1];
-		for(int round = 0; round < NUMBEROFROUNDS + 1; round++){
+		double[][] avgAvalanche = new double[NUMBEROFVERSIONS][desVersions[0].NUMBEROFROUNDS + 1];
+		for(int round = 0; round < desVersions[0].NUMBEROFROUNDS + 1; round++){
 			for(int version = 0 ; version < NUMBEROFVERSIONS; version++){
 				for(int y = 0; y < noOfBits; y++){
 					avgAvalanche[version][round] += checkDifferences(desVersions[version].getRoundText(round), desWith1BitDifference[version][y].getRoundText(round));
@@ -148,14 +145,14 @@ public class Application {
 				avgAvalanche[version][round] = Math.round(avgAvalanche[version][round] / noOfBits);
 			}
 		}
-		writeToFile(avgAvalanche, writer);
+		writeToFile(desVersions[0].NUMBEROFROUNDS, avgAvalanche, writer);
 	}
 	/**
 	 * @param data
 	 * @param writer
 	 */
-	private static void writeToFile(double [][] data, PrintWriter writer){
-		for(int i = 0; i < NUMBEROFROUNDS + 1; i++){
+	private static void writeToFile(int rounds, double [][] data, PrintWriter writer){
+		for(int i = 0; i < rounds + 1; i++){
 			writer.write(""+i);
 			for(int y = 0; y < NUMBEROFVERSIONS; y++){
 				writer.write("\t\t"+(int)data[y][i]);
