@@ -8,7 +8,93 @@ public class Round{
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
+<<<<<<< HEAD
 	private int[][][] sBoxes = new int[][][]{ //[sBoxID][column][row]
+=======
+	
+	/**
+	 * Constructor: Round
+	 * @param sInstructions: Sequence of individual ciphers to be performed. 
+	 */
+	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
+	/**
+	 * @param lHalf: 32-bit integer (Left half of the text).
+	 * @param rHalf: 32-bit integer (Right half of the text).
+	 * @param subKey: 48-bit integer.
+	 * @return: The processed text, after a single round. 
+	 */
+	public String process(String lHalf, String rHalf, String subKey){
+		String leftSideUsedForXor = lHalf;
+		lHalf = rHalf;
+		// Subject the right side of the text, through a series of 
+		// permutations and substitutions. 
+		rHalf = function(rHalf, subKey); //Apply our round function to the right half using the appropriate subkey
+		// Bitwise operator exclusiveOR.
+		rHalf = Bitwise.xor(leftSideUsedForXor, rHalf); //And XOR the left half over it
+		return lHalf+rHalf;
+	}
+
+	/**
+	 * @param rHalf: 32-bit integer (Right half initial text).
+	 * @param subKey: 48-bit integer.
+	 * @return: A 32-bit text modified according to the round algorithm
+	 */
+	private String function(String rHalf, String subKey){
+		// Expand the 32-bit text to 48-bits.
+		rHalf = expansion(rHalf);
+		// Bitwise operator exclusiveOR.
+		// XOR the 48-bits, with the 48-bit sub key. 
+		rHalf = Bitwise.xor(rHalf, subKey);
+		// Execute additional methods, in the order in which they
+		// were expressed in the int array sInstructions. 
+		for(int i = 0; i < sInstructions.length; i++){
+			rHalf = executeAdditionalCiphers(sInstructions[i], rHalf);
+		}
+		return rHalf;
+	}
+
+	/**
+	 * @param i: Which round function we're calling
+	 * @param text: The text to use with the round function
+	 * @return: The text modified according to the specified round function
+	 */
+	private String executeAdditionalCiphers(int i, String text){
+		switch(i){
+		case 0:
+			text = substitution(text);
+			break;
+		case 1:
+			text = permutation(text);
+			break;
+		case 2:
+			text = inverseExpansion(text);
+			break;
+		}
+		return text;
+	}
+
+	/**
+	 * @param text: A 32-bit integer 
+	 * @return: A 48-bit integer permuted according to the expansion table
+	 */
+	public String expansion(String text){return Transposition.permute(text, eTable);}
+	
+	/**
+	 * @param text: A 48-bit integer
+	 * @return: A 32-bit integer with the expansion table reversed
+	 */
+	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
+	
+	/**
+	 * @param text
+	 * @return
+	 */
+	public String permutation(String text){ return Transposition.permute(text, pTable); }
+	
+	//This array contains the 16 S-boxes
+	private int[][][] sBoxes = new int[][][] //[sBoxID][column][row]
+	{
+>>>>>>> e8edc14e696ac83cce44547c10dcde416d1e9d66
 		{
 			{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
 			{0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
@@ -66,6 +152,7 @@ public class Round{
 		},
 	};
 
+<<<<<<< HEAD
 	/* Constructor: Round
 	 * @param sInstructions: Sequence of individual ciphers to be performed. */
 	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
@@ -134,6 +221,12 @@ public class Round{
 	
 	/* @param text: 
 	 * @return the substitution value corresponding with the @param text*/
+=======
+	/**
+	 * @param text: A 48-bit integer
+	 * @return: A 48-bit integer that has the 16 S-boxes applied to it
+	 */
+>>>>>>> e8edc14e696ac83cce44547c10dcde416d1e9d66
 	private String substitution(String text){
 		String value="";
 		String textBlock="";
@@ -159,9 +252,18 @@ public class Round{
 		return value;
 	}
 
+<<<<<<< HEAD
 	/* @param text accepts a string containing binary digits and return the integer conversion of it
 	 * @return value*/
 	private int binaryToDec(String text){
+=======
+	/**
+	 * @param text: Accepts a string containing binary digits
+	 * @return value: The integer conversion of the input
+	 */
+	private int binaryToDec(String text)
+	{
+>>>>>>> e8edc14e696ac83cce44547c10dcde416d1e9d66
 		int multiplier=1;
 		int value=0;
 
@@ -175,9 +277,18 @@ public class Round{
 		return value;
 	}
 
+<<<<<<< HEAD
 	/* @param num accepts and integer and return a binary string conversion of it
 	 * @return value*/
 	private String decimalToBin(int num){
+=======
+	/**
+	 * @param num: Accepts an integer
+	 * @return value: Binary string conversion of the input
+	 */
+	private String decimalToBin(int num)
+	{
+>>>>>>> e8edc14e696ac83cce44547c10dcde416d1e9d66
 		int multiplier=1;
 		String value="";
 
