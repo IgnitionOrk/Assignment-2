@@ -52,7 +52,7 @@ public class DES {
 	private final int[] finalPermutationTable = new int[]{40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25};
 	private String[] roundText; //contains the text at the end of each round. Used to calculate Avalanche effect
 	public final int NUMBEROFROUNDS = 16;
-
+	private final int BLOCKLENGTH = 64;
 	/* @param version: The version of DES used to encrypt or decrypt the text.
 	 * @param noOfRounds: The number of rounds the text is subjected to. */
 	public DES(Version version){
@@ -72,6 +72,10 @@ public class DES {
 
 	/* @param text: The text DES is going to transform into either plaintext or ciphertext. */
 	public void begin(String text){
+		if(text.length() < BLOCKLENGTH){
+			// pad the text with zeros until it has 64-bits.
+			text = padded(text);
+		}
 		if(mode.valueOf()){
 			// Decrypting the ciphertext to obtains its plaintext
 			ciphertext = text;
@@ -81,6 +85,17 @@ public class DES {
 			plaintext = text;
 			ciphertext = transform(plaintext);
 		}
+	}
+
+	/* If the text we are either encrypting or decrypting is less than a 64-bit block.
+	 * Pad to the end of the text, but adding additional zeros.
+	 * @param text: n-bit text less than 64 bits.
+	 * @return padded 64-bit text */
+	private String padded(String text) {
+		for(int i = text.length(); i < BLOCKLENGTH; i++){
+			text += "0";
+		}
+		return text;
 	}
 
 	/* Subjects the @param text through a combination of permutations and rounds,

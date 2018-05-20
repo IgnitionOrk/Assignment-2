@@ -17,8 +17,10 @@ public class KeyGenerator {
 	private final String BIT = "1";
 	private final String COMPLEMENT = "0";
 	
+	private final int KEYLENGTH = 56;
+	
 	/* @param decrypting: Will use a reverse ordering of the keys
-	 * @param key: The 56-bit binary digit, used to generate subkeys.
+	 * @param key: The n-bit binary digit, used to generate subkeys.
 	 * @param noOfSubkeys: Corresponds to the number of rounds. Each round will have a different subkey. */
 	public KeyGenerator(boolean decrypting, String key, int noOfSubkeys){
 		this.iCount = 0;
@@ -29,8 +31,11 @@ public class KeyGenerator {
 
 	/* Initializes the subkey array 
 	 * @param mode: A 1-bit used to determine if we are encrypting or decrypting. 1 = decrypting, otherwise we are encrypting. 
-	 * @param key */
+	 * @param key: a n-bit binary digit.  */
 	private void subkeys(String key, int noOfSubkeys){
+		if(key.length() < KEYLENGTH){
+			key = padded(key);
+		}
 		// depending on if we're decrypting or encrypting, start at the beginning or end of int shifts[]
 		if(reverseKeys){
 			this.rNumber = noOfSubkeys;
@@ -39,14 +44,21 @@ public class KeyGenerator {
 		}
 
 		iCount = 0;
-		key = padded(key); // Argument is the 56 bit key and pad every eighth bit
-		key = Transposition.permute(key, PC1); //then use PC1 to return a 56 bit key (different to the input 56 bit key)
+		key = expand(key); // Argument is the KEYLENGTH bit key and expanded to insert an additional eighth bit
+		key = Transposition.permute(key, PC1); //then use PC1 to return a KEYLENGTH bit key (different to the input 56 bit key)
 		generateSubkeys(key, noOfSubkeys); // generate 'noOfSubkeys' subkeys
 	}
-
-	/* @param key: a 56-bit key
-	 * @return a padded 64-bit key */
+	/* @param key: an n-bit key less than KEYLENGTH-bits.
+	 * @return a padded KEYLENGTH-bit key */
 	private String padded(String key){
+		for(int i = key.length(); i < KEYLENGTH; i++){
+			key += "0";
+		}
+		return key;
+	}
+	/* @param key: a KEYLENGTH-bit key
+	 * @return a expanded 64-bit key */
+	private String expand(String key){
 		int eLength = 7;
 		String padded = "";
 		String sevenBits = "";
@@ -86,7 +98,7 @@ public class KeyGenerator {
 		return count;
 	}
 
-	/* @param key: The 56-bit binary integer.  
+	/* @param key: The KEYLENGTH-bit binary integer.  
 	 * @param noOfSubkeys: The number of corresponding rounds. */
 	private void generateSubkeys(String key, int noOfSubkeys) {
 		String c = "";
@@ -136,11 +148,11 @@ public class KeyGenerator {
 		return subkeys[rNumber];
 	}
 
-	/* @param key: 56-bit binary digit.
+	/* @param key: KEYLENGTH-bit binary digit.
 	 * @return the left half of the @param key */
 	private String left(String key){ return key.substring(0, (key.length() / 2));}
 	
-	/* @param key: 56-bit binary digit. 
+	/* @param key: KEYLENGTH-bit binary digit. 
 	 * @return the right half of the @param key */
 	private String right(String key){ return key.substring((key.length() / 2), key.length());}
 }
