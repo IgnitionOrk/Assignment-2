@@ -36,7 +36,7 @@ public class Round{
 	/**
 	 * @param rHalf: 32-bit integer (Right half initial text).
 	 * @param subKey: 48-bit integer.
-	 * @return
+	 * @return: A 32-bit text modified according to the round algorithm
 	 */
 	private String function(String rHalf, String subKey){
 		// Expand the 32-bit text to 48-bits.
@@ -53,9 +53,9 @@ public class Round{
 	}
 
 	/**
-	 * @param i
-	 * @param text
-	 * @return
+	 * @param i: Which round function we're calling
+	 * @param text: The text to use with the round function
+	 * @return: The text modified according to the specified round function
 	 */
 	private String executeAdditionalCiphers(int i, String text){
 		switch(i){
@@ -73,23 +73,24 @@ public class Round{
 	}
 
 	/**
-	 * @param text
-	 * @return
+	 * @param text: A 32-bit integer 
+	 * @return: A 48-bit integer permuted according to the expansion table
 	 */
 	public String expansion(String text){return Transposition.permute(text, eTable);}
+	
 	/**
-	 * @param text
-	 * @return
+	 * @param text: A 48-bit integer
+	 * @return: A 32-bit integer with the expansion table reversed
 	 */
 	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
+	
 	/**
 	 * @param text
 	 * @return
 	 */
 	public String permutation(String text){ return Transposition.permute(text, pTable); }
-	/**
-	 * 
-	 */
+	
+	//This array contains the 16 S-boxes
 	private int[][][] sBoxes = new int[][][] //[sBoxID][column][row]
 	{
 		{
@@ -150,8 +151,8 @@ public class Round{
 	};
 
 	/**
-	 * @param text
-	 * @return
+	 * @param text: A 48-bit integer
+	 * @return: A 48-bit integer that has the 16 S-boxes applied to it
 	 */
 	private String substitution(String text){
 		String value="";
@@ -180,8 +181,8 @@ public class Round{
 	}
 
 	/**
-	 * @param text accepts a string containing binary digits and return the integer conversion of it
-	 * @return value
+	 * @param text: Accepts a string containing binary digits
+	 * @return value: The integer conversion of the input
 	 */
 	private int binaryToDec(String text)
 	{
@@ -201,8 +202,8 @@ public class Round{
 	}
 
 	/**
-	 * @param num accepts and integer and return a binary string conversion of it
-	 * @return value
+	 * @param num: Accepts an integer
+	 * @return value: Binary string conversion of the input
 	 */
 	private String decimalToBin(int num)
 	{
