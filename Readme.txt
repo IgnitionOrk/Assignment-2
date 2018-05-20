@@ -13,7 +13,12 @@ mode
 plaintext
 key
 
-Where mode is a single bit with 1 denoting encryption and 0 for decryption, plaintext is a 64 bit string, and key is a 56 bit string
+Where mode is a single bit with 1 denoting encryption and 0 for decryption, plaintext is a 64 bit string, and key is a 56 bit string.
+Example:
+1
+0000000000000000000000000000000000000000000000000000000000000000
+11111111111111111111111111111111111111111111111111111111
+
 
 The program has been sucessfully compiled and run with java version "10.0.1" 2018-04-17 and with java version "1.9.0_171"
 
