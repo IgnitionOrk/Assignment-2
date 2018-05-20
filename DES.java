@@ -3,6 +3,19 @@
  * 	2) Jonathan Low: 3279624 */
 
 public class DES {
+	private DESMode mode;
+	private Version version;
+	private KeyGenerator keyGenerator;
+	private Round round;
+	private String plaintext;
+	private String ciphertext;
+	private String[] roundText; //contains the text at the end of each round. Used to calculate Avalanche effect
+	public final int NUMBEROFROUNDS = 16;
+	private final int BLOCKLENGTH = 64;
+	
+	private final int[] initialPermutationTable = new int[]{58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7};
+	private final int[] finalPermutationTable = new int[]{40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25};
+	
 	public enum DESMode{
 		/* The boolean argument determines if we need to reverse the subkeys.
 		 * false: no need to reverse, otherwise reverse subkeys.*/
@@ -23,6 +36,7 @@ public class DES {
 		DES1("DES1", new int[]{0}),
 		DES2("DES2", new int[]{2,1}),
 		DES3("DES3", new int[]{2});
+				
 		private String version;	// E.g. DES0, DES1, DES2, or DES3
 		
 		/* Sequence of instructions for which the round will execute and in what order. */
@@ -41,18 +55,7 @@ public class DES {
 			this.sequence = sequence;
 		}
 	}  
-
-	private DESMode mode;
-	private Version version;
-	private KeyGenerator keyGenerator;
-	private Round round;
-	private String plaintext;
-	private String ciphertext;
-	private final int[] initialPermutationTable = new int[]{58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7};
-	private final int[] finalPermutationTable = new int[]{40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29, 36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25};
-	private String[] roundText; //contains the text at the end of each round. Used to calculate Avalanche effect
-	public final int NUMBEROFROUNDS = 16;
-	private final int BLOCKLENGTH = 64;
+	
 	/* @param version: The version of DES used to encrypt or decrypt the text.
 	 * @param noOfRounds: The number of rounds the text is subjected to. */
 	public DES(Version version){

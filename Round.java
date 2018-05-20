@@ -1,97 +1,14 @@
-/**
- * Student name: Student Number:
+/* Student name: Student Number:
  * 	1) Ryan Cunneen: 3179234
- * 	2) Jonathan Low: 3279624
- * */
+ * 	2) Jonathan Low: 3279624*/
 public class Round{	
-	//sInstructions contains the order of the steps of the round. This is used for DES1/2/3 and is not part of the original DES standard
-	//it is used to test how insecure DES is when you modify any part of the algorithm
+	// sInstructions contains the order of the steps of the round. This is used for DES1/2/3 and is not part of the original DES standard
+	// it is used to test how insecure DES is when you modify any part of the algorithm
 	private int[] sInstructions; 
 	private int[] eTable = new int[]{32,1,2,3,4,5,4,5,6,7,8,9,8,9,10,11,12,13,12,13,14,15,16,17,16,17,18,19,20,21,20,21,22,23,24,25,24,25,26,27,28,29,28,29,30,31,32,1};
 	private int[] iETable = new int[]{2,3,4,5,8,9,10,11,14,15,16,17,20,21,22,23,26,27,28,29,32,33,34,35,38,39,40,41,44,45,46,47};
 	private int[] pTable = new int[]{16,7,20,21,29,12,28,17,1,15,23,26,5,18,31,10,2,8,24,14,32,27,3,9,19,13,30,6,22,11,4,25};
-	
-	/**
-	 * Constructor: Round
-	 * @param sInstructions: Sequence of individual ciphers to be performed. 
-	 */
-	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
-	/**
-	 * @param lHalf: 32-bit integer (Left half of the text).
-	 * @param rHalf: 32-bit integer (Right half of the text).
-	 * @param subKey: 48-bit integer.
-	 * @return: The processed text, after a single round. 
-	 */
-	public String process(String lHalf, String rHalf, String subKey){
-		String leftSideUsedForXor = lHalf;
-		lHalf = rHalf;
-		// Subject the right side of the text, through a series of 
-		// permutations and substitutions. 
-		rHalf = function(rHalf, subKey); //Apply our round function to the right half using the appropriate subkey
-		// Bitwise operator exclusiveOR.
-		rHalf = Bitwise.xor(leftSideUsedForXor, rHalf); //And XOR the left half over it
-		return lHalf+rHalf;
-	}
-
-	/**
-	 * @param rHalf: 32-bit integer (Right half initial text).
-	 * @param subKey: 48-bit integer.
-	 * @return
-	 */
-	private String function(String rHalf, String subKey){
-		// Expand the 32-bit text to 48-bits.
-		rHalf = expansion(rHalf);
-		// Bitwise operator exclusiveOR.
-		// XOR the 48-bits, with the 48-bit sub key. 
-		rHalf = Bitwise.xor(rHalf, subKey);
-		// Execute additional methods, in the order in which they
-		// were expressed in the int array sInstructions. 
-		for(int i = 0; i < sInstructions.length; i++){
-			rHalf = executeAdditionalCiphers(sInstructions[i], rHalf);
-		}
-		return rHalf;
-	}
-
-	/**
-	 * @param i
-	 * @param text
-	 * @return
-	 */
-	private String executeAdditionalCiphers(int i, String text){
-		switch(i){
-		case 0:
-			text = substitution(text);
-			break;
-		case 1:
-			text = permutation(text);
-			break;
-		case 2:
-			text = inverseExpansion(text);
-			break;
-		}
-		return text;
-	}
-
-	/**
-	 * @param text
-	 * @return
-	 */
-	public String expansion(String text){return Transposition.permute(text, eTable);}
-	/**
-	 * @param text
-	 * @return
-	 */
-	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
-	/**
-	 * @param text
-	 * @return
-	 */
-	public String permutation(String text){ return Transposition.permute(text, pTable); }
-	/**
-	 * 
-	 */
-	private int[][][] sBoxes = new int[][][] //[sBoxID][column][row]
-	{
+	private int[][][] sBoxes = new int[][][]{ //[sBoxID][column][row]
 		{
 			{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
 			{0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
@@ -149,10 +66,74 @@ public class Round{
 		},
 	};
 
-	/**
-	 * @param text
-	 * @return
-	 */
+	/* Constructor: Round
+	 * @param sInstructions: Sequence of individual ciphers to be performed. */
+	public Round(int[] sInstructions){this.sInstructions = sInstructions;}
+	
+	/* @param lHalf: 32-bit integer (Left half of the text).
+	 * @param rHalf: 32-bit integer (Right half of the text).
+	 * @param subKey: 48-bit integer.
+	 * @return: The processed text, after a single round.*/
+	public String process(String lHalf, String rHalf, String subKey){
+		String leftSideUsedForXor = lHalf;
+		lHalf = rHalf;
+		// Subject the right side of the text, through a series of 
+		// permutations and substitutions. 
+		rHalf = function(rHalf, subKey); //Apply our round function to the right half using the appropriate subkey
+		// Bitwise operator exclusiveOR.
+		rHalf = Bitwise.xor(leftSideUsedForXor, rHalf); //And XOR the left half over it
+		return lHalf+rHalf;
+	}
+
+	/* @param rHalf: 32-bit integer (Right half initial text).
+	 * @param subKey: 48-bit integer.
+	 * @return Processed 32-bit rhalf. */
+	private String function(String rHalf, String subKey){
+		// Expand the 32-bit text to 48-bits.
+		rHalf = expansion(rHalf);
+		// Bitwise operator exclusiveOR.
+		// XOR the 48-bits, with the 48-bit sub key. 
+		rHalf = Bitwise.xor(rHalf, subKey);
+		// Execute additional methods, in the order in which they
+		// were expressed in the int array sInstructions. 
+		for(int i = 0; i < sInstructions.length; i++){
+			rHalf = executeAdditionalCiphers(sInstructions[i], rHalf);
+		}
+		return rHalf;
+	}
+
+	/* @param i: The value in the value corresponding to an additional cipher to be executed. 
+	 * @param text: The text to be processed through the cipher.
+	 * @return Processed 32-bit text*/
+	private String executeAdditionalCiphers(int i, String text){
+		switch(i){
+		case 0:
+			text = substitution(text);
+			break;
+		case 1:
+			text = permutation(text);
+			break;
+		case 2:
+			text = inverseExpansion(text);
+			break;
+		}
+		return text;
+	}
+
+	/* @param text: Text to be permuted, using a table.
+	 * @return Permutation of the text. */
+	public String expansion(String text){return Transposition.permute(text, eTable);}
+	
+	/* @param text: Text to be permuted, using a table.
+	 * @return Permutation of the text. */
+	public String inverseExpansion(String text){return Transposition.permute(text, iETable);}
+	
+	/* @param text: Text to be permuted, using a table.
+	 * @return Permutation of the text. */
+	public String permutation(String text){ return Transposition.permute(text, pTable); }
+	
+	/* @param text: 
+	 * @return the substitution value corresponding with the @param text*/
 	private String substitution(String text){
 		String value="";
 		String textBlock="";
@@ -175,23 +156,17 @@ public class Round{
 
 			value+=block;
 		}
-
 		return value;
 	}
 
-	/**
-	 * @param text accepts a string containing binary digits and return the integer conversion of it
-	 * @return value
-	 */
-	private int binaryToDec(String text)
-	{
+	/* @param text accepts a string containing binary digits and return the integer conversion of it
+	 * @return value*/
+	private int binaryToDec(String text){
 		int multiplier=1;
 		int value=0;
 
-		for(int i=text.length(); i>0; i--) //loop backwards through the string
-		{
-			if(text.substring(i-1,i).equals("1"))
-			{
+		for(int i=text.length(); i>0; i--){ //loop backwards through the string
+			if(text.substring(i-1,i).equals("1")){
 				value+=multiplier; //add our multiplier value for each 1, add nothing for 0's
 			}
 			multiplier*=2; //double multiplier value for each digit
@@ -200,34 +175,26 @@ public class Round{
 		return value;
 	}
 
-	/**
-	 * @param num accepts and integer and return a binary string conversion of it
-	 * @return value
-	 */
-	private String decimalToBin(int num)
-	{
+	/* @param num accepts and integer and return a binary string conversion of it
+	 * @return value*/
+	private String decimalToBin(int num){
 		int multiplier=1;
 		String value="";
 
 		//start off with the largest multiple of 2 that is smaller than the number
-		while((multiplier*2)<=num)
-		{
+		while((multiplier*2)<=num){
 			multiplier*=2;
 		}
 
-		while(multiplier>0)
-		{
-			if(multiplier>num)
-			{
+		while(multiplier>0){
+			if(multiplier>num){
 				value+="0";
 			}else{
 				value+="1";
 				num-=multiplier;
 			}
-
 			multiplier/=2;
 		}
-
 		return value;
 	}
 }
