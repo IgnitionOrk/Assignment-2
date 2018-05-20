@@ -49,15 +49,18 @@ public class Application {
 	 * @param output
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException*/
-	private static void decryption(String ciphertext, String key, String output) throws FileNotFoundException, UnsupportedEncodingException{
-	    PrintWriter dWriter = new PrintWriter(output, "UTF-8");
+	private static void decryption(String ciphertext, String key, String outputFilename) throws FileNotFoundException, UnsupportedEncodingException{
 		DES des = new DES(DES.Version.DES0); //DES0 is the original DES algorithm
 		des.initializeCipher(DES.DESMode.DECRYPT, key); //initialise to decrypt and use the supplied 56bit key
 		des.begin(ciphertext);
-		dWriter.write("DECRYPTION\n");
-		dWriter.write("Ciphertext C:" + des.getCiphertext()+"\n");
-		dWriter.write("Key K:" + key+"\n");
-		dWriter.write("Plaintext P:"+ des.getPlaintext()+"\n");	
+		
+		
+		// Output the desired information for decryption. 
+	    PrintWriter dWriter = new PrintWriter(outputFilename, "UTF-8");
+		dWriter.write("DECRYPTION"+System.lineSeparator());
+		dWriter.write("Ciphertext C:" + des.ciphertext()+System.lineSeparator());
+		dWriter.write("Key K:" + key+System.lineSeparator());
+		dWriter.write("Plaintext P:"+ des.plaintext()+System.lineSeparator());	
 		dWriter.close();
 	}
 	
@@ -66,7 +69,7 @@ public class Application {
 	 * @param output
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException */
-	private static void encryption(String plaintext, String key, String output) throws FileNotFoundException, UnsupportedEncodingException{
+	private static void encryption(String plaintext, String key, String outputFilename) throws FileNotFoundException, UnsupportedEncodingException{
 		// No difference in either plaintext P or key K. 
 		DES[] desVersions = new DES[DES.Version.values().length]; //4 DES versions, the original and a few different modified versions
 		for(int i = 0; i < DES.Version.values().length; i++){
@@ -76,24 +79,28 @@ public class Application {
 			desVersions[i].begin(plaintext);
 		}
 		
-		String p[] = bitDifferenceArray(plaintext); // An array of plaintexts differing by 1-bit.
+		String p[] = bitDifferenceArray(desVersions[0].plaintext()); // An array of plaintexts differing by 1-bit.
 		String k[] = bitDifferenceArray(key);	// An array of keys differing by 1-bit.
 		
 		// Plain texts with a difference of 1-bit. Pi under K;
-		DES[][] desPDB = differentPlaintextsUnderKeyK(plaintext.length(), key, p); 
+		DES[][] desPDB = differentPlaintextsUnderKeyK(desVersions[0].plaintext().length(), key, p); 
 
 		// Encrypting the plaintext P under different keys (by 1-bit).
 		DES[][] desKBD = plaintextUnderDifferentKeys(key.length(), plaintext, k);
 	
-	    PrintWriter eWriter = new PrintWriter(output, "UTF-8");
-	    eWriter.write("ENCRYPTION\n");
-	    eWriter.write("Plaintext P:" + plaintext+"\n");
-	    eWriter.write("Key K:" + key+"\t\n");
-	    eWriter.write("Ciphertext C:"+ desVersions[0].getCiphertext()+"\n");
-
-		eWriter.write("\nAvalanche:\nP and Pi under K\nRound:\tDES0\tDES1\tDES2\tDES3\n");
+		// Output the desired information for encryption. 
+	    PrintWriter eWriter = new PrintWriter(outputFilename, "UTF-8");
+	    eWriter.write("ENCRYPTION"+System.lineSeparator());
+	    eWriter.write("Plaintext P:" + desVersions[0].getRoundText(0)+System.lineSeparator());
+	    eWriter.write("Key K:" + key+System.lineSeparator());
+	    eWriter.write("Ciphertext C:"+ desVersions[0].ciphertext()+System.lineSeparator());
+	    eWriter.write("Avalanche:"+System.lineSeparator());
+		eWriter.write("P and Pi under K"+System.lineSeparator());
+		eWriter.write("Round:\tDES0\tDES1\tDES2\tDES3"+System.lineSeparator());
 	    avalanche(plaintext.length(), desVersions, desPDB, eWriter);
-		eWriter.write("\nP under K and Ki\nRound:\tDES0\tDES1\tDES2\tDES3\n");
+	    eWriter.write(System.lineSeparator());
+		eWriter.write("P under K and Ki"+System.lineSeparator());
+		eWriter.write("Round:\tDES0\tDES1\tDES2\tDES3"+System.lineSeparator());
 	    avalanche(key.length(), desVersions, desKBD, eWriter);
 		eWriter.close();
 
@@ -158,7 +165,7 @@ public class Application {
 			for(int y = 0; y < DES.Version.values().length; y++){
 				writer.write("\t\t"+(int)data[y][i]);
 			}
-			writer.write("\n");
+			writer.write(System.lineSeparator());
 		}
 	}
 	

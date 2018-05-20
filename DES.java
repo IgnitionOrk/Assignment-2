@@ -144,10 +144,10 @@ public class DES {
 	public String version(){ return version.getVersion();}
 	
 	/* @return the result after a block of 64-bit has been gone through DES Rounds. */
-	public String getCiphertext(){ return ciphertext;}
+	public String ciphertext(){ return ciphertext;}
 
 	/* @return the original 64-bit plaintext. */
-	public String getPlaintext(){ return plaintext;}
+	public String plaintext(){ return plaintext;}
 	
 	/* @param index: The index used to extract the processed text for a particular round.  
 	 * @return The text processed at 'index'th round*/
@@ -156,5 +156,9 @@ public class DES {
 			return plaintext;
 		}
 		return roundText[index - 1];
+	}
+
+	public String key() {
+		return null;
 	}
 }
