@@ -16,9 +16,6 @@ mode
 plaintext
 key
 
-OUTPUT File, 
-Do not open the output file in notepad, all text will be displayed on one line. 
-
 Where mode is a single bit with 1 denoting encryption and 0 for decryption, plaintext is a 64 bit string, and key is a 56 bit string.
 Example:
 1

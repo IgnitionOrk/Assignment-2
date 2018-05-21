@@ -151,14 +151,10 @@ public class DES {
 	
 	/* @param index: The index used to extract the processed text for a particular round.  
 	 * @return The text processed at 'index'th round*/
-	public String getRoundText(int index){ 
+	public String roundText(int index){ 
 		if(index == 0){
 			return plaintext;
 		}
 		return roundText[index - 1];
-	}
-
-	public String key() {
-		return null;
 	}
 }
